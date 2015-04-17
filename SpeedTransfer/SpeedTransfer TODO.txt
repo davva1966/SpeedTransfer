@@ -1,0 +1,115 @@
+- Link editor with navigator
+- QueryDefinition xml tree sometimes shows replacevar subnodes
+- Fix messages for access not allowed on files
+
+Done 20111221
+- Rebranding to SpeedTransfer
+- Fixed issue where the database connection sometimes did not close properly
+- Fixed issue that prevented multiline queries to be exported to excel
+
+Done 20111028
+- Added support for "cvs" connection type to create queries over csv files 
+- New export function. Export to database.
+
+Done 20111012
+- Added support for "select" sql only in studio and browser install 
+- Install routine can now run over old installation
+- Added DataTool.ini option to always run queries on default connection (if any) 
+
+Done 20111010
+- Improved parsing for replacement variables
+- This sql gives null pointer exception on save
+	"select * from mytable1 orderno < |orderno|"
+
+
+Done 20110923
+- Remove path variables
+- Copy/Link resources dialog (see above)
+
+Done 20110922
+- Fixed folder mixup between studio/browser in install programs
+- Added view properties
+- Copy/Paste in SQL source pop-up
+- Excel style copy in SQL result view (Supported via new excel view)
+
+Done 20110915
+- "Show at runtime" on comments is no set to false by default
+- Fixed a problem where exporting to excel and specifying "Last current row" overwrote the last existing row. 
+- Fixed a bug that sometimes prevented saving a query that had replacement variables with "Exclude if empty".
+- Fixed the formatting routine so it does not remove double quotes from column alias names.
+- Fixed problem with values from sql for replacement values sometimes didn't work
+- Enabled support for SQL Server database
+- Enabled support for Oracle database
+- Enabled support for IBM DB2 database
+- Enabled support for PostgreSQL database
+
+
+
+Done 20110908
+- Fixed the extra blank line that sometimes appeared in sql and comments
+- Added checkbox "Show at runtime" to comments page. If checked, a dialog (with OK and Cancel) with the comments will be displayed when the query is run.
+- Added "Show comments" to pop-up menu to display comments on resources. Once the comment view is opened it can be moved to it's prefered 
+  location (which will be rememeberd) and will automatically update it's content when a new selection is detected. A new selection is when a new resource
+  is selcted in the project tree view or if an open editor is given focus by selecting it. Show comments can also be activated with Ctrl+D.
+- Updated pdf and excel (Apache POI) libraries to latest version.
+  
+
+Done 20110831
+- Reworked sql formatting routine
+- Added ability to set default database connection
+- Clicking close (red cross) on dialogs is equal to cancel
+- Fixed a few bugs in the replacement variable value lists
+- Added new icons and images
+- Added "open in xml editor" to view the raw xml for resources
+- Changed some informational messages from type "error" to type "info"
+- Added warning messages for "low memory state". 
+- Attempt to gracefully cancel current operation if an "out of memory" condition occurs. 
+ 
+
+Done 20110821
+- Save defaults now works when saving defaults from outside an editor
+- Disallow create exe if empty sql or connection
+- Extern Drag & Drop in navigator (use CTRL key while dragging to copy)
+- Define allowed values (via list of predefined values or embedded sql)for replacement variables 
+- Support for multiple sql statements in a query definition or scratchpad
+
+Done 20110819
+- Do dummy export to excel after export to reclaim memory
+- Added auto-size button to query result view
+- Remove parsing from replacement variable translation
+- Reading large excel files when selecting using much memory
+- Prevent large exports to excel without "replace file" 
+- Removed type "Period" from replacement variables
+- Enabled copy function in query result view
+- Fixed the "Show view" function in the query builder wizard.
+- Improved parsing for replacement variables
+- Validate query SQL before save
+
+
+Done 20110817
+- Fix synching errors when copying/renaming resources
+- Move run+export icons to global location in editors
+
+
+Done 20110815
+- Sort DBConnection prompt
+- Remove empty projects/folders in DBConnection prompt
+
+
+
+Done 20110807
+  Excel
+- Show existing sheets
+- Export headings
+- Clear sheet before
+- Show existing workbooks and only update selected in export to excel
+
+- Expiry date  + message on executables
+- Translate all texts
+- Handle insert/update/delete
+- Organise popup items and toolbar items
+- Column + table remarks for iSeries 
+
+
+
+

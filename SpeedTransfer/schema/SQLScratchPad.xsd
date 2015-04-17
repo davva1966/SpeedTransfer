@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema elementFormDefault="qualified"
+	targetNamespace="http://speedtransfer.schema/SQLScratchPad.xsd" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://speedtransfer.schema/SQLScratchPad.xsd">
+	<xsd:annotation>
+	</xsd:annotation>
+	<xsd:element name="sqlScratchPad">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="sql" minOccurs="1" maxOccurs="1" />
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="sql">
+		<xsd:complexType>
+			<xsd:simpleContent>
+				<xsd:extension base="xsd:string">
+					<xsd:attribute name="dbConnectionFile" use="optional"
+						type="xsd:string" />
+				</xsd:extension>
+			</xsd:simpleContent>
+		</xsd:complexType>
+	</xsd:element>
+</xsd:schema>
+	

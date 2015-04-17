@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema elementFormDefault="qualified" targetNamespace="http://speedtransfer.schema/QueryDefinition.xsd" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://speedtransfer.schema/QueryDefinition.xsd">
+	<xsd:annotation>
+	</xsd:annotation>
+	<xsd:element name="queryDefinition">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="sql" minOccurs="1" maxOccurs="1" />
+				<xsd:element ref="execution" minOccurs="1" maxOccurs="1" />
+				<xsd:element ref="comment" minOccurs="1" maxOccurs="1" />
+			</xsd:sequence>
+			<xsd:attribute name="description" use="optional" type="xsd:string" />
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="sql">
+		<xsd:complexType>
+			<xsd:simpleContent>
+				<xsd:extension base="xsd:string">
+					<xsd:attribute name="dbConnectionFile" use="optional" type="xsd:string" />
+				</xsd:extension>
+			</xsd:simpleContent>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="execution">
+		<xsd:complexType mixed="true">
+			<xsd:sequence>
+				<xsd:choice maxOccurs="unbounded">
+					<xsd:element name="replacementVariable" minOccurs="0" maxOccurs="unbounded" />
+					<xsd:element name="defaults" minOccurs="0" maxOccurs="1" />
+				</xsd:choice>
+			</xsd:sequence>
+			<xsd:attribute name="columnHeadings" use="optional">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:enumeration value="name"></xsd:enumeration>
+						<xsd:enumeration value="description"></xsd:enumeration>
+						<xsd:enumeration value="both"></xsd:enumeration>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:attribute>
+			<xsd:attribute name="defaultRunOption" use="required">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:enumeration value="excel"></xsd:enumeration>
+						<xsd:enumeration value="pdf"></xsd:enumeration>
+						<xsd:enumeration value="csv"></xsd:enumeration>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:attribute>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="replacementVariable">
+		<xsd:complexType>
+			<xsd:attribute name="name" use="required" type="xsd:string" />
+			<xsd:attribute name="description" use="required" type="xsd:string" />
+			<xsd:attribute name="type" use="required">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:enumeration value="String"></xsd:enumeration>
+						<xsd:enumeration value="Numeric"></xsd:enumeration>
+						<xsd:enumeration value="Date"></xsd:enumeration>
+						<xsd:enumeration value="Period"></xsd:enumeration>
+						<xsd:enumeration value="Time"></xsd:enumeration>
+						<xsd:enumeration value="List of values"></xsd:enumeration>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:attribute>
+			<xsd:attribute name="defaultValue" use="optional" type="xsd:string" />
+			<xsd:attribute name="mandatory" use="optional" type="xsd:boolean" />
+			<xsd:attribute name="excludeIfEmpty" use="optional" type="xsd:boolean" />
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="defaults">
+		<xsd:complexType>
+			<xsd:all>
+				<xsd:element ref="excelDefaults" minOccurs="0" maxOccurs="1" />
+				<xsd:element ref="pdfDefaults" minOccurs="0" maxOccurs="1" />
+				<xsd:element ref="csvDefaults" minOccurs="0" maxOccurs="1" />
+				<xsd:element ref="selectionDefaults" minOccurs="0" maxOccurs="1" />
+			</xsd:all>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="excelDefaults">
+		<xsd:complexType>
+			<xsd:attribute name="fileName" use="optional" type="xsd:string" />
+			<xsd:attribute name="replaceFile" use="optional" type="xsd:boolean" />
+			<xsd:attribute name="worksheet" use="optional" type="xsd:string" />
+			<xsd:attribute name="fileFormat" use="optional">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:enumeration value="xls"></xsd:enumeration>
+						<xsd:enumeration value="xlsx"></xsd:enumeration>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:attribute>
+			<xsd:attribute name="exportHeadings" use="optional" type="xsd:boolean" />
+			<xsd:attribute name="clearSheet" use="optional" type="xsd:boolean" />
+			<xsd:attribute name="startRowType" use="optional">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:enumeration value="first"></xsd:enumeration>
+						<xsd:enumeration value="last"></xsd:enumeration>
+						<xsd:enumeration value="row"></xsd:enumeration>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:attribute>
+			<xsd:attribute name="startRowNumber" use="optional" type="xsd:string" />
+			<xsd:attribute name="launch" use="optional" type="xsd:boolean" />
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="pdfDefaults">
+		<xsd:complexType>
+			<xsd:attribute name="fileName" use="optional" type="xsd:string" />
+			<xsd:attribute name="launch" use="optional" type="xsd:boolean" />
+			<xsd:attribute name="printSQL" use="optional" type="xsd:boolean" />
+			<xsd:attribute name="pageSize" use="optional" type="xsd:string" />
+			<xsd:attribute name="orientation" use="optional">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:enumeration value="landscape"></xsd:enumeration>
+						<xsd:enumeration value="portrait"></xsd:enumeration>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:attribute>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="csvDefaults">
+		<xsd:complexType>
+			<xsd:attribute name="fileName" use="optional" type="xsd:string" />
+			<xsd:attribute name="launch" use="optional" type="xsd:boolean" />
+			<xsd:attribute name="columnSeparator" use="optional" type="xsd:string" />
+			<xsd:attribute name="tabSeparated" use="optional" type="xsd:boolean" />
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="selectionDefaults">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="selection" minOccurs="0" maxOccurs="unbounded" />
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="selection">
+		<xsd:complexType>
+			<xsd:attribute name="variableName" use="optional" type="xsd:string" />
+			<xsd:attribute name="type" use="optional">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:enumeration value="String"></xsd:enumeration>
+						<xsd:enumeration value="Numeric"></xsd:enumeration>
+						<xsd:enumeration value="Date"></xsd:enumeration>
+						<xsd:enumeration value="Period"></xsd:enumeration>
+						<xsd:enumeration value="Time"></xsd:enumeration>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:attribute>
+			<xsd:attribute name="value" use="optional" type="xsd:string" />
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="comment">
+		<xsd:complexType>
+			<xsd:simpleContent>
+				<xsd:extension base="xsd:string">
+					<xsd:attribute name="showAtRuntime" use="optional" type="xsd:boolean" default="false"/>
+				</xsd:extension>
+			</xsd:simpleContent>
+		</xsd:complexType>
+	</xsd:element>
+</xsd:schema>
+	

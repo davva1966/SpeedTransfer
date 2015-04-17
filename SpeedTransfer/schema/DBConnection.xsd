@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema elementFormDefault="qualified"
+	targetNamespace="http://speedtransfer.schema/DBConnection.xsd" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://speedtransfer.schema/DBConnection.xsd">
+	<xsd:annotation>
+	</xsd:annotation>
+	<xsd:element name="dbConnectionDefinition">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="connection" minOccurs="1" maxOccurs="unbounded" />
+				<xsd:element ref="comment" minOccurs="1" maxOccurs="1" />
+			</xsd:sequence>
+			<xsd:attribute name="description" use="optional" type="xsd:string" />
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="connection">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="property" minOccurs="0" maxOccurs="unbounded" />
+			</xsd:sequence>
+			<xsd:attribute name="description" use="optional" type="xsd:string" />
+			<xsd:attribute name="type" use="required">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:enumeration value="iseries"></xsd:enumeration>
+						<xsd:enumeration value="mysql"></xsd:enumeration>
+						<xsd:enumeration value="sqlserver"></xsd:enumeration>
+						<xsd:enumeration value="oracle"></xsd:enumeration>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:attribute>
+			<xsd:attribute name="host" use="required" type="xsd:string" />
+			<xsd:attribute name="port" use="optional" type="xsd:integer" />
+			<xsd:attribute name="database" use="required" type="xsd:string" />
+			<xsd:attribute name="user" use="optional" type="xsd:string" />
+			<xsd:attribute name="password" use="optional" type="xsd:string" />
+			<xsd:attribute name="prompt" use="optional" type="xsd:boolean" />
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="property">
+		<xsd:complexType>
+			<xsd:attribute name="name" use="required" type="xsd:string" />
+			<xsd:attribute name="value" use="required" type="xsd:string" />
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="comment">
+		<xsd:complexType>
+			<xsd:simpleContent>
+				<xsd:extension base="xsd:string">
+				</xsd:extension>
+			</xsd:simpleContent>
+		</xsd:complexType>
+	</xsd:element>
+</xsd:schema>
+	

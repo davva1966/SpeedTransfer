@@ -1,0 +1,106 @@
+<project name="create windows executable" default="create_exe">
+
+	<property name="build.dir" location="${workdir}/build" />
+	<property name="7zip.exe.dir" location="${workdir}/7zip" />
+	<property name="sfx.dir" location="${workdir}/sfx" />
+	<property name="dist.dir" location="${workdir}/dist" />
+	<property name="launcher.dir" location="${workdir}/launcher" />
+	<property name="jarloader.dir" location="${basedir}/jarloader" />
+	<property name="antcontrib.dir" location="${basedir}/antcontrib" />
+	<property name="extra.jar.dir" location="${basedir}/jars" />
+
+
+	<taskdef resource="net/sf/antcontrib/antlib.xml">
+		<classpath>
+			<fileset dir="${antcontrib.dir}">
+				<include name="*.jar" />
+			</fileset>
+		</classpath>
+	</taskdef>
+	
+	<copy todir="${workdir}">
+		<fileset dir="${basedir}" />
+	</copy>
+
+	<target name="cleandist">
+		<delete includeemptydirs="true">
+			<fileset dir="${dist.dir}" includes="**/*" />
+			<fileset dir="${build.dir}" includes="**/*" />
+			<fileset dir="${launcher.dir}" includes="app.jar" />
+			<fileset dir="${launcher.dir}" includes="app.7z" />
+		</delete>
+	</target>
+
+	<target name="build">
+		<copy todir="${build.dir}">
+			<fileset dir="${eclipse.jar.dir}">
+				<include name="org.apache.xerces_*.jar" />
+				<include name="org.eclipse.core.commands_*.jar" />
+				<include name="org.eclipse.core.jobs_*.jar" />
+				<include name="org.eclipse.core.resources_*.jar" />
+				<include name="org.eclipse.core.runtime_*.jar" />
+				<include name="org.eclipse.equinox.common_*.jar" />
+				<include name="org.eclipse.equinox.preferences_*.jar" />
+				<include name="org.eclipse.equinox.registry_*.jar" />
+				<include name="org.eclipse.jface_*.jar" />
+				<include name="org.eclipse.text_*.jar" />
+				<include name="org.eclipse.jface.text_*.jar" />
+				<include name="org.eclipse.osgi_*.jar" />
+				<include name="org.eclipse.swt.win32.win32.x86_*.jar" />
+				<include name="org.eclipse.ui.workbench_*.jar" />
+				<include name="org.eclipse.ui.forms_*.jar" />
+				<include name="org.eclipse.ui.editors_*.jar" />
+			</fileset>
+			<regexpmapper from="([a-zA-Z0-9\.]*)(.*)" to="\1.jar" />
+		</copy>
+
+		<copy todir="${build.dir}" flatten="true">
+			<fileset dir="${extra.jar.dir}" includes="**/*">
+				<include name="*.jar" />
+			</fileset>
+		</copy>
+
+		<copy todir="${build.dir}">
+			<fileset dir="${jarloader.dir}" />
+		</copy>
+
+		<copy todir="${launcher.dir}/jre">
+			<fileset dir="${jre.dir}" />
+		</copy>
+		<copy file="${queryfile.path}" tofile="${launcher.dir}/qd.xml" />
+		<copy file="${dbconfile.path}" tofile="${launcher.dir}/dbcon.xml" />
+
+	</target>
+
+	<target name="create_exe" depends="cleandist, build">
+
+		<!-- create a runnable jar -->
+		<jar destfile="${launcher.dir}/app.jar" manifest="Manifest.mf">
+			<fileset dir="${build.dir}">
+				<include name="**/*.class" />
+				<include name="**/*.jar" />
+			</fileset>
+		</jar>
+
+		<!-- compress all of the files we need down with 7zip -->
+		<exec executable="${7zip.exe.dir}/7z.exe" failonerror="true">
+			<arg value="a" />
+			<arg value="-t7z" />
+			<arg value="-r" />
+			<arg value="${launcher.dir}\app.7z" />
+			<arg value="${launcher.dir}" />
+		</exec>
+
+		<!-- concat the files we need together to produce a binary
+    			launcher -->
+		<concat destfile="${dist.dir}/start.exe" binary="yes">
+			<fileset file="${sfx.dir}/7zSD.sfx" />
+			<fileset file="${sfx.dir}/${app.file}" />
+			<fileset file="${launcher.dir}/app.7z" />
+		</concat>
+
+		<copy file="${dist.dir}/start.exe" tofile="${targetfile.path}" overwrite="true" />
+
+	</target>
+
+</project>
