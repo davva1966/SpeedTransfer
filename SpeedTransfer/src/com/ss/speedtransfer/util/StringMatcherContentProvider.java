@@ -80,37 +80,41 @@ public class StringMatcherContentProvider extends TextContentDescriber implement
 		int marker = 0;
 		char currentChar = ' ';
 
-		int numCharsRead;
-		while ((numCharsRead = contents.read(buffer)) > 0) {
-			totalCharsRead += numCharsRead;
-			for (int c = 0; c < numCharsRead; c++) {
+		try {
+			int numCharsRead;
+			while ((numCharsRead = contents.read(buffer)) > 0) {
+				totalCharsRead += numCharsRead;
+				for (int c = 0; c < numCharsRead; c++) {
 
-				if (ignoreWhiteSpace && (Character.toString(buffer[c]).trim().length() == 0))
-					continue;
+					if (ignoreWhiteSpace && (Character.toString(buffer[c]).trim().length() == 0))
+						continue;
 
-				if (ignoreCase)
-					currentChar = Character.toUpperCase(buffer[c]);
-				else
-					currentChar = buffer[c];
+					if (ignoreCase)
+						currentChar = Character.toUpperCase(buffer[c]);
+					else
+						currentChar = buffer[c];
 
-				if (currentChar == searchString.charAt(count)) {
-					if (count == 0)
-						marker = c;
-					count++;
-				} else {
-					if (count > 0)
-						c = marker;
-					count = 0;
+					if (currentChar == searchString.charAt(count)) {
+						if (count == 0)
+							marker = c;
+						count++;
+					} else {
+						if (count > 0)
+							c = marker;
+						count = 0;
+
+					}
+
+					if (count == searchString.length())
+						return VALID;
 
 				}
 
-				if (count == searchString.length())
-					return VALID;
-
+				if (totalCharsRead >= charsToRead)
+					break;
 			}
 
-			if (totalCharsRead >= charsToRead)
-				break;
+		} catch (Exception e) {
 		}
 		return INVALID;
 

@@ -147,6 +147,18 @@
                standalone="false"
                visible="true">
          </view>
+         <view
+               closeable="true"
+               id="org.eclipse.search.*"
+               minimized="false"
+               moveable="true"
+               ratio="0.75"
+               relationship="stack"
+               relative="com.ss.speedtransfer.startView"
+               showTitle="true"
+               standalone="false"
+               visible="false">
+         </view>
       </perspectiveExtension>
    </extension>
    <extension
@@ -549,7 +561,11 @@
       </activityPatternBinding>
       <activityPatternBinding
             activityId="com.ss.speedtransfer.activity"
-            pattern="org.eclipse.search.*">
+            pattern="org.eclipse.jdt.ui.*">
+      </activityPatternBinding>
+      <activityPatternBinding
+            activityId="com.ss.speedtransfer.activity"
+            pattern="org.eclipse.pde.ui.*">
       </activityPatternBinding>
       <activityPatternBinding
             activityId="com.ss.speedtransfer.activity"
