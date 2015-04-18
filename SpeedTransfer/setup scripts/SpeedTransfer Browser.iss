@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "SpeedTransfer Browser"
-#define MyAppVersion "Beta 5.01"
+#define MyAppVersion "6.00"
 #define MyAppExeName "SpeedTransfer.exe"
 
 [Setup]
@@ -18,7 +18,7 @@ DefaultGroupName={#MyAppName}
 AllowNoIcons=yes
 OutputDir=C:\Temp2
 OutputBaseFilename=speedtransfer_browser_{#MyAppVersion}
-SetupIconFile=C:\SpeedSolutions\SpeedTransfer\icons\DataTool.ico
+SetupIconFile=D:\projects_speedtransfer\SpeedTransfer\SpeedTransfer\icons\DataTool.ico
 Compression=lzma
 SolidCompression=yes
 

@@ -1182,7 +1182,7 @@
                   id="com.ss.speedtransfer.enableServerFunctions">
                <systemTest
                      property="com.ss.speedtransfer.enable.server.functions"
-                     value="true">
+                     value="false">
                </systemTest>
             </definition>
             <definition
