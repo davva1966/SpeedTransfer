@@ -43,6 +43,7 @@ Bundle-ClassPath: .,
  create_exe/jars/jdbc/db2jcc4.jar,
  create_exe/jars/layout.jar,
  jars/commons-io-2.4.jar
+ jars/commons-collections4-4.0.jar
 Export-Package: com.ss.speedtransfer;
   uses:="org.eclipse.core.runtime,
    org.eclipse.jface.resource,

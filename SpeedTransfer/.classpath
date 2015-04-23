@@ -21,5 +21,6 @@
 	<classpathentry exported="true" kind="lib" path="create_exe/jars/jdbc/db2jcc4.jar"/>
 	<classpathentry exported="true" kind="lib" path="create_exe/jars/layout.jar"/>
 	<classpathentry exported="true" kind="lib" path="jars/commons-io-2.4.jar"/>
+	<classpathentry exported="true" kind="lib" path="jars/commons-collections4-4.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
