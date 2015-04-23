@@ -12,8 +12,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 
+import org.apache.commons.io.FileUtils;
 import org.eclipse.ant.core.AntRunner;
-import org.eclipse.core.internal.resources.Project;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.FileLocator;
@@ -259,6 +259,12 @@ public class WindowsExecutableExporter {
 		String buildDir = workDir + "build" + File.separator;
 		String distDir = workDir + "dist" + File.separator;
 		String launcherDir = workDir + "launcher" + File.separator;
+		
+		// Remove the create_exe directory
+		File wd = new File(workDir);
+		if (wd.exists()) {
+			FileUtils.deleteDirectory(wd);
+		}
 
 		File bd = new File(buildDir);
 		if (bd.exists() == false)

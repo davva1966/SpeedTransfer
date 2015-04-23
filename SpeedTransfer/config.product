@@ -7,7 +7,7 @@
    </configIni>
 
    <launcherArgs>
-      <vmArgs>-Xms40m -Xmx1024m -Dcom.ss.speedtransfer.enable.server.functions=&quot;false&quot;</vmArgs>
+      <vmArgs>-Xms40m -Xmx1024m</vmArgs>
       <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts</vmArgsMac>
    </launcherArgs>
 

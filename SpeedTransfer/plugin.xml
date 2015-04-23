@@ -387,10 +387,6 @@
             </command>
          </menu>
          <command
-               commandId="com.ss.speedtransfer.exportToServerCommand"
-               style="push">
-         </command>
-         <command
                commandId="com.ss.speedtransfer.creteExecutableCommand"
                style="push">
          </command>
@@ -702,10 +698,6 @@
             id="com.ss.speedtransfer.switchWorkspaceCommand"
             name="Switch workspace">
       </command>
-      <command
-            id="com.ss.speedtransfer.exportToServerCommand"
-            name="Export to server">
-      </command>
    </extension>
    <extension
          point="org.eclipse.ui.handlers">
@@ -943,23 +935,6 @@
             class="com.ss.speedtransfer.handlers.SwitchWorkspaceHandler"
             commandId="com.ss.speedtransfer.switchWorkspaceCommand">
       </handler>
-      <handler
-            class="com.ss.speedtransfer.handlers.ServerExportHandler"
-            commandId="com.ss.speedtransfer.exportToServerCommand">
-         <enabledWhen>
-            <and>
-               <reference
-                     definitionId="com.ss.speedtransfer.studioVersion">
-               </reference>
-               <reference
-                     definitionId="com.ss.speedtransfer.enableServerFunctions">
-               </reference>
-               <reference
-                     definitionId="com.ss.speedtransfer.exportableToServer">
-               </reference>
-            </and>
-         </enabledWhen>
-      </handler>
    </extension>
    <extension
          point="org.eclipse.ui.commandImages">
@@ -1034,10 +1009,6 @@
       <image
             commandId="com.ss.speedtransfer.runQueryToExcelCommand"
             icon="resources/images/execute.gif">
-      </image>
-      <image
-            commandId="com.ss.speedtransfer.exportToServerCommand"
-            icon="resources/images/run_on_server.gif">
       </image>
    </extension>
    <extension
@@ -1177,34 +1148,6 @@
                      property="com.ss.speedtransfer.version"
                      value="studio">
                </systemTest>
-            </definition>
-            <definition
-                  id="com.ss.speedtransfer.enableServerFunctions">
-               <systemTest
-                     property="com.ss.speedtransfer.enable.server.functions"
-                     value="false">
-               </systemTest>
-            </definition>
-            <definition
-                  id="com.ss.speedtransfer.exportableToServer">
-               <with
-                     variable="selection">
-                  <iterate
-                        ifEmpty="false">
-                     <or>
-                        <adapt
-                              type="org.eclipse.core.resources.IProject">
-                        </adapt>
-                        <adapt
-                              type="org.eclipse.core.resources.IFolder">
-                        </adapt>
-                        <test
-                              property="org.eclipse.core.resources.contentTypeId"
-                              value="com.ss.speedtransfer.queryContentType">
-                        </test>
-                     </or>
-                  </iterate>
-               </with>
             </definition>
             <definition
                   id="com.ss.speedtransfer.selectOnlyVersion">
