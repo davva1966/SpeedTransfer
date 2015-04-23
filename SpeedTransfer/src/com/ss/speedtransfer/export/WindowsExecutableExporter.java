@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.eclipse.ant.core.AntRunner;
+import org.eclipse.core.internal.resources.Project;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.FileLocator;
@@ -226,7 +227,7 @@ public class WindowsExecutableExporter {
 
 		String devMode = System.getProperty("com.ss.speedtransfer.devmode", "false");
 		if (devMode.trim().equalsIgnoreCase("true"))
-			return "C:\\eclipse_rcp\\plugins\\";
+			return "C:\\eclipse_rcp_64\\plugins\\";
 
 		return getInstallDirectory() + "plugins" + File.separator;
 

@@ -17,10 +17,11 @@ DefaultDirName={pf}\{#MyAppName}
 DefaultGroupName={#MyAppName}
 AllowNoIcons=yes
 OutputDir=C:\Temp2
-OutputBaseFilename=speedtransfer_studio_{#MyAppVersion}
+OutputBaseFilename=speedtransfer_studio_{#MyAppVersion}_64bit
 SetupIconFile=D:\projects_speedtransfer\SpeedTransfer\SpeedTransfer\icons\DataTool.ico
 Compression=lzma
 SolidCompression=yes
+ArchitecturesInstallIn64BitMode=x64
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
@@ -41,10 +42,10 @@ Name: desktopicon\common; Description: "For all users"; GroupDescription: "{cm:A
 Name: "{app}\"; Permissions: everyone-modify
 
 [Files]
-Source: "C:\Temp\speedtransfer\SpeedTransfer.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Temp\64\speedtransfer\SpeedTransfer.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "C:\Temp\Studio_License"; DestDir: "{app}"; DestName: "License"; Tasks: not selectonly; Permissions: users-modify; Flags: ignoreversion
 Source: "C:\Temp\Studio_License_SelectOnly"; DestDir: "{app}"; DestName: "License"; Tasks: selectonly; Permissions: users-modify; Flags: ignoreversion
-Source: "C:\Temp\speedtransfer\*"; DestDir: "{app}"; Permissions: users-modify; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "C:\Temp\64\speedtransfer\*"; DestDir: "{app}"; Permissions: users-modify; Flags: ignoreversion recursesubdirs createallsubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
