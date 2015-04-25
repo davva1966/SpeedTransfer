@@ -123,6 +123,7 @@ public class WindowsExecutableExporter {
 				boolean error = false;
 
 				try {
+					monitor.beginTask("Create Windows Executable", IProgressMonitor.UNKNOWN);
 					runTask(queryFile, monitor);
 					if (monitor.isCanceled()) {
 						status = Status.CANCEL_STATUS;
