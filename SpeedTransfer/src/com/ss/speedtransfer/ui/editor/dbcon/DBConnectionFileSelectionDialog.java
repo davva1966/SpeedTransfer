@@ -39,6 +39,7 @@ import org.eclipse.ui.dialogs.FilteredTree;
 import org.eclipse.ui.dialogs.PatternFilter;
 import org.eclipse.ui.ide.IDE;
 
+import com.itextpdf.text.log.SysoLogger;
 import com.ss.speedtransfer.model.DBConnection;
 import com.ss.speedtransfer.util.UIHelper;
 
@@ -229,16 +230,21 @@ public class DBConnectionFileSelectionDialog extends Dialog {
 		gd.horizontalSpan = 1;
 		gd.widthHint = 450;
 		gd.heightHint = 600;
+		
+		long start = System.currentTimeMillis();
 
 		filterTree.setLayoutData(gd);
 
 		TreeViewer viewer = filterTree.getViewer();
 		viewer.setContentProvider(new TreeContentProvider());
 		viewer.setLabelProvider(new TreeLabelProvider());
-		viewer.setInput(ResourcesPlugin.getWorkspace().getRoot());
 		viewer.addFilter(filter);
+		viewer.setInput(ResourcesPlugin.getWorkspace().getRoot());
 		viewer.setAutoExpandLevel(TreeViewer.ALL_LEVELS);
 		viewer.expandAll();
+		
+		long stop = System.currentTimeMillis();
+		System.out.println("Time: " + (stop-start));
 
 		viewer.addSelectionChangedListener(new ISelectionChangedListener() {
 
