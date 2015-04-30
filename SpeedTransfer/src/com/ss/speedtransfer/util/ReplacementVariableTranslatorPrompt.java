@@ -77,12 +77,13 @@ public class ReplacementVariableTranslatorPrompt {
 		super();
 		this.queryDef = queryDef;
 		this.connection = con;
-		useEclipse = false;
-		try {
-			if (PlatformUI.isWorkbenchRunning())
-				useEclipse = true;
-		} catch (Exception e) {
-		}
+//		useEclipse = false;
+//		try {
+//			if (PlatformUI.isWorkbenchRunning())
+//				useEclipse = true;
+//		} catch (Exception e) {
+//		}
+		useEclipse = EnvironmentHelper.isExecutableEnvironment() == false;
 		if (useEclipse == false) {
 			canSaveDefaults = false;
 		} else {

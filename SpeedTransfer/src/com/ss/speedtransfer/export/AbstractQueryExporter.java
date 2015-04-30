@@ -20,7 +20,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.forms.widgets.Form;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.progress.IProgressConstants;
@@ -30,11 +29,12 @@ import com.ss.speedtransfer.model.QueryDefinition;
 import com.ss.speedtransfer.model.SQLScratchPad;
 import com.ss.speedtransfer.util.CommentPrompt;
 import com.ss.speedtransfer.util.ConnectionManager;
-import com.ss.speedtransfer.util.SSUtil;
+import com.ss.speedtransfer.util.EnvironmentHelper;
 import com.ss.speedtransfer.util.MemoryWatcher;
 import com.ss.speedtransfer.util.ReplacementVariableTranslatorPrompt;
 import com.ss.speedtransfer.util.SQLExecuter;
 import com.ss.speedtransfer.util.SQLHelper;
+import com.ss.speedtransfer.util.SSUtil;
 import com.ss.speedtransfer.util.UIHelper;
 
 
@@ -82,12 +82,14 @@ public abstract class AbstractQueryExporter implements QueryExporter {
 	public AbstractQueryExporter(QueryDefinition queryDef) {
 		super();
 		this.queryDef = queryDef;
-		useEclipse = false;
-		try {
-			if (PlatformUI.isWorkbenchRunning())
-				useEclipse = true;
-		} catch (Exception e) {
-		}
+		
+//		useEclipse = false;
+//		try {
+//			if (PlatformUI.isWorkbenchRunning())
+//				useEclipse = true;
+//		} catch (Exception e) {
+//		}
+		useEclipse = EnvironmentHelper.isExecutableEnvironment() == false;
 
 		if (useEclipse == false) {
 			canSaveDefaults = false;

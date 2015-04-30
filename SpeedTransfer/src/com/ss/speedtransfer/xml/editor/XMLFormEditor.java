@@ -9,6 +9,7 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jface.action.IStatusLineManager;
 import org.eclipse.jface.dialogs.IMessageProvider;
 import org.eclipse.jface.window.Window;
+import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorInput;
@@ -23,7 +24,6 @@ import org.eclipse.ui.part.FileEditorInput;
 
 import com.ss.speedtransfer.SpeedTransferPlugin;
 import com.ss.speedtransfer.ui.UIHelper;
-
 
 public class XMLFormEditor extends FormEditor implements XMLModelListener {
 
@@ -208,7 +208,8 @@ public class XMLFormEditor extends FormEditor implements XMLModelListener {
 			newInput = new FileEditorInput(newFile);
 
 			if (model == null) {
-				// editor has programmatically been closed while the dialog was open
+				// editor has programmatically been closed while the dialog was
+				// open
 				return;
 			}
 
@@ -259,5 +260,12 @@ public class XMLFormEditor extends FormEditor implements XMLModelListener {
 
 	public XMLModel getModel() {
 		return model;
+	}
+
+	protected void createPages() {
+		super.createPages();
+		if (getPageCount() == 1 && getContainer() instanceof CTabFolder) {
+			((CTabFolder) getContainer()).setTabHeight(0);
+		}
 	}
 }

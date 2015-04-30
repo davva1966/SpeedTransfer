@@ -147,9 +147,10 @@
                standalone="false"
                visible="true">
          </view>
+         <!--
          <view
                closeable="true"
-               id="org.eclipse.search.*"
+               id="org.eclipse.search.ui.views.SearchView"
                minimized="false"
                moveable="true"
                ratio="0.75"
@@ -159,6 +160,7 @@
                standalone="false"
                visible="false">
          </view>
+         -->
       </perspectiveExtension>
    </extension>
    <extension
@@ -1250,6 +1252,10 @@
          <property
                name="preferenceCustomization"
                value="plugin_customization.ini">
+         </property>
+         <property
+               name="applicationCSSResources"
+               value="platform:/plugin/plugin.name/images/ ">
          </property>
       </product>
    </extension>

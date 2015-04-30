@@ -156,7 +156,7 @@ public class UIHelper {
 	public IWorkbenchWindow getActiveWindow() {
 		try {
 			return PlatformUI.getWorkbench().getActiveWorkbenchWindow();
-		} catch (Exception e) {
+		} catch (Throwable e) {
 		}
 
 		return null;
@@ -167,7 +167,7 @@ public class UIHelper {
 		Shell shell = null;
 		try {
 			shell = getActiveWindow().getShell();
-		} catch (Exception e) {
+		} catch (Throwable e) {
 		}
 		if (shell == null)
 			shell = new Shell();
@@ -179,7 +179,7 @@ public class UIHelper {
 	public IWorkbenchPage getActivePage() {
 		try {
 			return getActiveWindow().getActivePage();
-		} catch (Exception e) {
+		} catch (Throwable e) {
 		}
 
 		return null;

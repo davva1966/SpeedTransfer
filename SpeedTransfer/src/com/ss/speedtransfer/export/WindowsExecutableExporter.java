@@ -228,7 +228,7 @@ public class WindowsExecutableExporter {
 
 		String devMode = System.getProperty("com.ss.speedtransfer.devmode", "false");
 		if (devMode.trim().equalsIgnoreCase("true"))
-			return "C:\\eclipse_rcp_64\\plugins\\";
+			return "C:\\eclipse_rcp_luna_64\\plugins\\";
 
 		return getInstallDirectory() + "plugins" + File.separator;
 
