@@ -31,7 +31,7 @@ Require-Bundle: org.eclipse.core.runtime;bundle-version="3.7.0",
  org.eclipse.platform;bundle-version="4.4.2",
  org.eclipse.e4.ui.css.swt.theme;bundle-version="0.9.300"
 Bundle-ActivationPolicy: lazy
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ClassPath: .,
  create_exe/jars/poi/ooxml-lib/dom4j-1.6.1.jar,
  create_exe/jars/poi/ooxml-lib/stax-api-1.0.1.jar,
