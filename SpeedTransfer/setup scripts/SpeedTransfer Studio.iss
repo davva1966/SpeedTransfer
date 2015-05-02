@@ -58,4 +58,5 @@ Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChang
 
 [UninstallDelete]
 Type: filesandordirs; Name: "{app}\configuration"
+Type: filesandordirs; Name: "{app}\p2"
 
