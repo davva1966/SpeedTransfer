@@ -324,19 +324,10 @@
                 	definitionId="com.ss.speedtransfer.dbConnection">
             	</reference>
          	</visibleWhen>
-            <parameter
-                  name="com.ss.speedtransfer.reset"
-                  value="false">
-            </parameter>
          </command>
          <command
-               commandId="com.ss.speedtransfer.setDefaultDB"
-               label="Reset Default Connection"
+               commandId="com.ss.speedtransfer.resetDefaultDB"
                style="push">
-            <parameter
-                  name="com.ss.speedtransfer.reset"
-                  value="true">
-            </parameter>
          </command>
          <separator
                name="com.ss.speedtransfer.separator4"
@@ -711,11 +702,10 @@
       <command
             id="com.ss.speedtransfer.setDefaultDB"
             name="Set as default connection">
-         <commandParameter
-               id="com.ss.speedtransfer.reset"
-               name="reset"
-               optional="true">
-         </commandParameter>
+      </command>
+      <command
+            id="com.ss.speedtransfer.resetDefaultDB"
+            name="Reset default connection">
       </command>
       <command
             id="com.ss.speedtransfer.showCommentsCommand"
@@ -920,6 +910,15 @@
                      definitionId="com.ss.speedtransfer.studioVersion">
                </reference>
             </and>
+         </enabledWhen>
+      </handler>
+      <handler
+            class="com.ss.speedtransfer.handlers.ResetDefaultDBHandler"
+            commandId="com.ss.speedtransfer.resetDefaultDB">
+         <enabledWhen>
+            <reference
+              definitionId="com.ss.speedtransfer.studioVersion">
+           	</reference>
          </enabledWhen>
       </handler>
       <handler
