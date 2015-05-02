@@ -51,10 +51,10 @@ import com.itextpdf.text.pdf.PdfPageEventHelper;
 import com.itextpdf.text.pdf.PdfWriter;
 import com.ss.speedtransfer.SpeedTransferPlugin;
 import com.ss.speedtransfer.model.QueryDefinition;
-import com.ss.speedtransfer.util.SSUtil;
 import com.ss.speedtransfer.util.ImageConverter;
 import com.ss.speedtransfer.util.ReplacementVariableTranslatorPrompt;
 import com.ss.speedtransfer.util.SQLHelper;
+import com.ss.speedtransfer.util.SSUtil;
 import com.ss.speedtransfer.util.UIHelper;
 
 

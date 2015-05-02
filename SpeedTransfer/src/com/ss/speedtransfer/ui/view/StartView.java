@@ -11,16 +11,13 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.IPartListener;
 import org.eclipse.ui.IWorkbenchPart;
-import org.eclipse.ui.internal.WorkbenchPage;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.ui.themes.IThemeManager;
 
 import com.ss.speedtransfer.SpeedTransferPlugin;
 import com.ss.speedtransfer.util.LicenseManager;
-import com.ss.speedtransfer.util.UIHelper;
 
 
 /**

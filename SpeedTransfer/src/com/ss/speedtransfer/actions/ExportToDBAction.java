@@ -5,8 +5,8 @@ import org.eclipse.jface.action.IAction;
 import com.ss.speedtransfer.export.QueryToDatabaseExporter;
 import com.ss.speedtransfer.model.QueryDefinition;
 import com.ss.speedtransfer.util.ConnectionManager;
-import com.ss.speedtransfer.util.SSUtil;
 import com.ss.speedtransfer.util.LicenseManager;
+import com.ss.speedtransfer.util.SSUtil;
 import com.ss.speedtransfer.util.UIHelper;
 
 

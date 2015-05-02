@@ -24,9 +24,9 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import com.ss.speedtransfer.ui.editor.dbcon.DBConnectionFileSelectionDialog;
-import com.ss.speedtransfer.util.SSUtil;
 import com.ss.speedtransfer.util.LicenseManager;
 import com.ss.speedtransfer.util.SQLHelper;
+import com.ss.speedtransfer.util.SSUtil;
 import com.ss.speedtransfer.util.StringHelper;
 import com.ss.speedtransfer.util.StringMatcher;
 import com.ss.speedtransfer.util.UIHelper;

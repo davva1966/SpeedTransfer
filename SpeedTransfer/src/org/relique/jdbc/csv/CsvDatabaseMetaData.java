@@ -15,7 +15,11 @@
  */
 package org.relique.jdbc.csv;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
+import java.sql.RowIdLifetime;
+import java.sql.SQLException;
 
 /**
  *This class will implement the DatabaseMetaData interface for the CsvJdbc driver.

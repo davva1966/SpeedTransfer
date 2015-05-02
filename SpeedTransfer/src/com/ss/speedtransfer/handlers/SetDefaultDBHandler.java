@@ -9,8 +9,8 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.handlers.HandlerUtil;
 
 import com.ss.speedtransfer.model.DBConnection;
-import com.ss.speedtransfer.util.SSUtil;
 import com.ss.speedtransfer.util.DefaultDBManager;
+import com.ss.speedtransfer.util.SSUtil;
 
 public class SetDefaultDBHandler extends AbstractHandler {
 

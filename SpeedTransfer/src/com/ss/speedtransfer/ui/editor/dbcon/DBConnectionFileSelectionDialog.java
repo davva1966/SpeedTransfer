@@ -39,7 +39,6 @@ import org.eclipse.ui.dialogs.FilteredTree;
 import org.eclipse.ui.dialogs.PatternFilter;
 import org.eclipse.ui.ide.IDE;
 
-import com.itextpdf.text.log.SysoLogger;
 import com.ss.speedtransfer.model.DBConnection;
 import com.ss.speedtransfer.util.UIHelper;
 

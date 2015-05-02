@@ -40,8 +40,8 @@ import com.ss.speedtransfer.model.DBConnection;
 import com.ss.speedtransfer.model.QueryDefinition;
 import com.ss.speedtransfer.ui.editor.dbcon.DBConnectionFileSelectionDialog;
 import com.ss.speedtransfer.util.ConnectionManager;
-import com.ss.speedtransfer.util.SSUtil;
 import com.ss.speedtransfer.util.ReplacementVariableTranslatorPrompt;
+import com.ss.speedtransfer.util.SSUtil;
 import com.ss.speedtransfer.util.UIHelper;
 import com.ss.speedtransfer.util.parser.sql.SQLTypes;
 
