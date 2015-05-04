@@ -232,8 +232,9 @@ public abstract class AbstractQueryExporter implements QueryExporter {
 	}
 
 	protected Connection getConnection() throws Exception {
-		if (connection == null)
+		if (connection == null) {
 			connection = ConnectionManager.getConnection(queryDef);
+		}
 
 		return connection;
 	}

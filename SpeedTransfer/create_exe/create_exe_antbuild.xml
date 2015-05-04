@@ -64,9 +64,12 @@
 			<fileset dir="${jarloader.dir}" />
 		</copy>
 
-		<copy todir="${launcher.dir}/jre">
-			<fileset dir="${jre.dir}" />
+		<copy todir="${launcher.dir}/jre/bin">
+			<fileset dir="${jre.dir}/bin" >
+				<include name="javaw.exe" />
+			</fileset>
 		</copy>
+		
 		<copy file="${queryfile.path}" tofile="${launcher.dir}/qd.xml" />
 		<copy file="${dbconfile.path}" tofile="${launcher.dir}/dbcon.xml" />
 

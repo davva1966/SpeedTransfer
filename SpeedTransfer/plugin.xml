@@ -137,6 +137,18 @@
          </view>
          <view
                closeable="true"
+               id="org.eclipse.search.ui.views.SearchView"
+               minimized="false"
+               moveable="true"
+               ratio="0.75"
+               relationship="stack"
+               relative="com.ss.speedtransfer.queryExcelResultView"
+               showTitle="true"
+               standalone="false"
+               visible="true">
+         </view>
+         <view
+               closeable="true"
                id="org.eclipse.ui.views.ProgressView"
                minimized="false"
                moveable="true"

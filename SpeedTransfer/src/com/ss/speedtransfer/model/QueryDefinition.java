@@ -24,6 +24,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import com.ss.speedtransfer.ui.editor.dbcon.DBConnectionFileSelectionDialog;
+import com.ss.speedtransfer.util.EnvironmentHelper;
 import com.ss.speedtransfer.util.LicenseManager;
 import com.ss.speedtransfer.util.SQLHelper;
 import com.ss.speedtransfer.util.SSUtil;
@@ -31,7 +32,6 @@ import com.ss.speedtransfer.util.StringHelper;
 import com.ss.speedtransfer.util.StringMatcher;
 import com.ss.speedtransfer.util.UIHelper;
 import com.ss.speedtransfer.xml.editor.XMLModel;
-
 
 public class QueryDefinition extends XMLModel {
 
@@ -327,7 +327,7 @@ public class QueryDefinition extends XMLModel {
 		return node;
 
 	}
-	
+
 	public Node getDatabaseDefaultsNode(boolean create) {
 		Node node = getNode(DATABASE_DEFAULTS);
 		if (node == null && create)
@@ -462,11 +462,13 @@ public class QueryDefinition extends XMLModel {
 		if (dbConnection == null) {
 
 			if (getDBConnectionFile() != null && getDBConnectionFile().trim().length() > 0) {
-				try {
-					IPath path = new Path(getDBConnectionFile());
-					IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(path);
-					dbConnection = new DBConnection(file);
-				} catch (Exception e) {
+				if (EnvironmentHelper.isExecutableEnvironment() == false) {
+					try {
+						IPath path = new Path(getDBConnectionFile());
+						IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(path);
+						dbConnection = new DBConnection(file);
+					} catch (Exception e) {
+					}
 				}
 
 				if (dbConnection == null) {

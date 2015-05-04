@@ -29,6 +29,7 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
@@ -52,7 +53,6 @@ import com.ss.speedtransfer.util.SSUtil;
 import com.ss.speedtransfer.util.StringHelper;
 import com.ss.speedtransfer.util.UIHelper;
 import com.ss.speedtransfer.util.poi.POIUtil;
-
 
 public class QueryToExcelExporter extends AbstractQueryExporter implements QueryExporter {
 
@@ -693,108 +693,10 @@ public class QueryToExcelExporter extends AbstractQueryExporter implements Query
 		okButton.addSelectionListener(new SelectionListener() {
 			public void widgetSelected(SelectionEvent e) {
 
-				int totalRows = -1;
-				try {
-					totalRows = getTotalRows(sql);
-				} catch (Exception e2) {
-				}
-
-				try {
-					WorkbookUtil.validateSheetName(worksheetCombo.getText());
-				} catch (Exception e2) {
-					UIHelper.instance().showErrorMsg(settingsShell, "Error", "Invalid work sheet name. Error: " + SSUtil.getMessage(e2));
-					return;
-				}
-
-				try {
-					if (rowNumber.getSelection() && rowNumberEntry.getText() != null && rowNumberEntry.getText().trim().length() > 0)
-						Integer.parseInt(rowNumberEntry.getText().trim());
-				} catch (Exception e2) {
-					UIHelper.instance().showErrorMsg(settingsShell, "Error", "Invalid row number");
-					return;
-				}
-
-				// Max rows error
-				if (buttonXLS.getSelection() && totalRows > 65536) {
-					String title = "Error";
-					String message = "Maximum number of rows exceeded";
-					String message2 = ".xls type Excel files supports a maximum of 65536 rows";
-					UIHelper.instance().showErrorMsg(settingsShell, title, message + System.getProperty("line.separator") + message2);
-					return;
-				}
-				if (buttonXLSX.getSelection() && totalRows > 1048576) {
-					String title = "Error";
-					String message = "Maximum number of rows exceeded";
-					String message2 = ".xlsx type Excel files supports a maximum of 1048576 rows";
-					UIHelper.instance().showErrorMsg(settingsShell, title, message + System.getProperty("line.separator") + message2);
-					return;
-				}
-
-				// Large size warning
-				String filePath = fileEdit.getText().trim();
-				File file = new File(filePath);
-				if (file.exists() && replaceFile.getSelection() == false) {
-					if (totalRows >= 10000) {
-						String title = "Warning";
-						String message = "This query produces a large number of excel rows. Reusing an existing file will require a large amount of memory. Consider exporting to a non-existing file or selecting the \"Replace existing file\" function.";
-						String message2 = "Don you still want to run the export with current settings?";
-						int response = UIHelper.instance().showMessageWithOKCancel(title, message + StringHelper.getNewLine() + StringHelper.getNewLine() + message2);
-						if (response == SWT.CANCEL)
-							return;
-					}
-
-				}
-
-				if (properties == null)
-					properties = new HashMap<String, Object>();
-
-				properties.put(EXPORT_TO_FILE, adjustFileName(fileEdit.getText()));
-				properties.put(REPLACE, replaceFile.getSelection());
-				properties.put(WORK_SHEET, worksheetCombo.getText());
-
-				if (buttonXLS.getSelection())
-					properties.put(FORMAT, "xls");
-				if (buttonXLSX.getSelection())
-					properties.put(FORMAT, "xlsx");
-
-				properties.put(EXPORT_HEADINGS, exportHeadings.getSelection());
-
-				if (replaceFile.getSelection())
-					properties.put(CLEAR_SHEET, true);
-				else
-					properties.put(CLEAR_SHEET, clearSheet.getSelection());
-
-				String startRow = FIRST_ROW;
-				if (afterLastRow.getSelection()) {
-					startRow = AFTER_LAST_ROW;
-				} else if (rowNumber.getSelection()) {
-					startRow = ACTUAL_ROW;
-				}
-				properties.put(START_ROW, startRow);
-
-				String startRowStr = rowNumberEntry.getText().trim();
-				if (startRowStr == null || startRowStr.trim().length() == 0)
-					startRowStr = "0";
-				int startRowInt = Integer.parseInt(startRowStr) - 1;
-				if (startRowInt < 0)
-					startRowInt = 0;
-				properties.put(START_ROW_NUMBER, startRowInt);
-
-				properties.put(REMOVE_REMAINING_ROWS, removeRemainingRows.getSelection());
-
-				properties.put(LAUNCH, launchFile.getSelection());
-
-				cancel = false;
-
-				if (dialogSettings != null) {
-					dialogSettings.put("file", fileEdit.getText());
-					dialogSettings.put("replace", replaceFile.getSelection());
-					dialogSettings.put("clearSheet", clearSheet.getSelection());
-					dialogSettings.put("exportHeadings", exportHeadings.getSelection());
-					dialogSettings.put("launch", launchFile.getSelection());
-				}
-
-				settingsShell.close();
+				settingsShell.setCursor(new Cursor(settingsShell.getDisplay(), SWT.CURSOR_WAIT));
+				okAction(settingsShell, dialogSettings, sql);
+				if (settingsShell.isDisposed() == false)
+					settingsShell.setCursor(new Cursor(settingsShell.getDisplay(), SWT.CURSOR_ARROW));
 
 			}
 
@@ -868,6 +770,113 @@ public class QueryToExcelExporter extends AbstractQueryExporter implements Query
 		}
 
 		return properties;
+
+	}
+
+	protected void okAction(Shell settingsShell, IDialogSettings dialogSettings, String sql) {
+
+		int totalRows = -1;
+		try {
+			totalRows = getTotalRows(sql);
+		} catch (Exception e2) {
+		}
+
+		try {
+			WorkbookUtil.validateSheetName(worksheetCombo.getText());
+		} catch (Exception e2) {
+			UIHelper.instance().showErrorMsg(settingsShell, "Error", "Invalid work sheet name. Error: " + SSUtil.getMessage(e2));
+			return;
+		}
+
+		try {
+			if (rowNumber.getSelection() && rowNumberEntry.getText() != null && rowNumberEntry.getText().trim().length() > 0)
+				Integer.parseInt(rowNumberEntry.getText().trim());
+		} catch (Exception e2) {
+			UIHelper.instance().showErrorMsg(settingsShell, "Error", "Invalid row number");
+			return;
+		}
+
+		// Max rows error
+		if (buttonXLS.getSelection() && totalRows > 65536) {
+			String title = "Error";
+			String message = "Maximum number of rows exceeded";
+			String message2 = ".xls type Excel files supports a maximum of 65536 rows";
+			UIHelper.instance().showErrorMsg(settingsShell, title, message + System.getProperty("line.separator") + message2);
+			return;
+		}
+		if (buttonXLSX.getSelection() && totalRows > 1048576) {
+			String title = "Error";
+			String message = "Maximum number of rows exceeded";
+			String message2 = ".xlsx type Excel files supports a maximum of 1048576 rows";
+			UIHelper.instance().showErrorMsg(settingsShell, title, message + System.getProperty("line.separator") + message2);
+			return;
+		}
+
+		// Large size warning
+		String filePath = fileEdit.getText().trim();
+		File file = new File(filePath);
+		if (file.exists() && replaceFile.getSelection() == false) {
+			if (totalRows >= 10000) {
+				String title = "Warning";
+				String message = "This query produces a large number of excel rows. Reusing an existing file will require a large amount of memory. Consider exporting to a non-existing file or selecting the \"Replace existing file\" function.";
+				String message2 = "Don you still want to run the export with current settings?";
+				int response = UIHelper.instance().showMessageWithOKCancel(title, message + StringHelper.getNewLine() + StringHelper.getNewLine() + message2);
+				if (response == SWT.CANCEL)
+					return;
+			}
+
+		}
+
+		if (properties == null)
+			properties = new HashMap<String, Object>();
+
+		properties.put(EXPORT_TO_FILE, adjustFileName(fileEdit.getText()));
+		properties.put(REPLACE, replaceFile.getSelection());
+		properties.put(WORK_SHEET, worksheetCombo.getText());
+
+		if (buttonXLS.getSelection())
+			properties.put(FORMAT, "xls");
+		if (buttonXLSX.getSelection())
+			properties.put(FORMAT, "xlsx");
+
+		properties.put(EXPORT_HEADINGS, exportHeadings.getSelection());
+
+		if (replaceFile.getSelection())
+			properties.put(CLEAR_SHEET, true);
+		else
+			properties.put(CLEAR_SHEET, clearSheet.getSelection());
+
+		String startRow = FIRST_ROW;
+		if (afterLastRow.getSelection()) {
+			startRow = AFTER_LAST_ROW;
+		} else if (rowNumber.getSelection()) {
+			startRow = ACTUAL_ROW;
+		}
+		properties.put(START_ROW, startRow);
+
+		String startRowStr = rowNumberEntry.getText().trim();
+		if (startRowStr == null || startRowStr.trim().length() == 0)
+			startRowStr = "0";
+		int startRowInt = Integer.parseInt(startRowStr) - 1;
+		if (startRowInt < 0)
+			startRowInt = 0;
+		properties.put(START_ROW_NUMBER, startRowInt);
+
+		properties.put(REMOVE_REMAINING_ROWS, removeRemainingRows.getSelection());
+
+		properties.put(LAUNCH, launchFile.getSelection());
+
+		cancel = false;
+
+		if (dialogSettings != null) {
+			dialogSettings.put("file", fileEdit.getText());
+			dialogSettings.put("replace", replaceFile.getSelection());
+			dialogSettings.put("clearSheet", clearSheet.getSelection());
+			dialogSettings.put("exportHeadings", exportHeadings.getSelection());
+			dialogSettings.put("launch", launchFile.getSelection());
+		}
+
+		settingsShell.close();
 
 	}
 

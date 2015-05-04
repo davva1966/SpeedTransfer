@@ -107,6 +107,10 @@ public class LicenseManager {
 	}
 
 	private static void load() {
+
+		FileInputStream fis = null;
+		ObjectInputStream ois = null;
+
 		try {
 			String installPath = Platform.getInstallLocation().getURL().getPath();
 			if (installPath.endsWith(File.separator) == false)
@@ -119,8 +123,8 @@ public class LicenseManager {
 				return;
 			}
 
-			FileInputStream fis = new FileInputStream(licenseFile);
-			ObjectInputStream ois = new ObjectInputStream(fis);
+			fis = new FileInputStream(licenseFile);
+			ois = new ObjectInputStream(fis);
 			Properties props = (Properties) ois.readObject();
 			properties = decryptProperties(props);
 
@@ -137,6 +141,17 @@ public class LicenseManager {
 		} catch (Exception e) {
 			errorMessage = SSUtil.getMessage(e);
 			isValid = false;
+		} finally {
+			try {
+				if (fis != null)
+					fis.close();
+			} catch (Exception e2) {
+			}
+			try {
+				if (ois != null)
+					ois.close();
+			} catch (Exception e2) {
+			}
 		}
 
 	}
@@ -163,6 +178,7 @@ public class LicenseManager {
 
 	private static void setTrialPeriod(File licenseFile) throws Exception {
 		FileOutputStream fos = null;
+		ObjectOutputStream oos = null;
 		try {
 			Calendar cal = Calendar.getInstance();
 			cal.add(Calendar.DAY_OF_MONTH, 30);
@@ -173,7 +189,7 @@ public class LicenseManager {
 			properties.put(EXP_DATE, dateString);
 
 			fos = new FileOutputStream(licenseFile);
-			ObjectOutputStream oos = new ObjectOutputStream(fos);
+			oos = new ObjectOutputStream(fos);
 			oos.writeObject(encryptProperties(properties));
 
 		} finally {
@@ -182,7 +198,11 @@ public class LicenseManager {
 					fos.close();
 			} catch (Exception e2) {
 			}
-
+			try {
+				if (oos != null)
+					oos.close();
+			} catch (Exception e2) {
+			}
 		}
 
 	}
