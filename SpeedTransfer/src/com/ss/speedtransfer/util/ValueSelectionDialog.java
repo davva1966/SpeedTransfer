@@ -3,7 +3,6 @@
 package com.ss.speedtransfer.util;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Dialog;
 import org.eclipse.swt.widgets.Display;
@@ -75,9 +74,12 @@ public class ValueSelectionDialog extends Dialog {
 	public String open() {
 		Shell parent = getParent();
 		shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
-		Point location = shell.getLocation();
-		shell.setBounds(location.x + 30, location.y + 150, 430, 153);
-		shell.setText(getText());
+		shell.setSize(430, 153);
+		
+		UIHelper.instance().centerInParent(parent, shell);
+		
+//		Point location = shell.getLocation();
+//		shell.setBounds(location.x + 30, location.y + 150, 430, 153);
 
 		createWidgets();
 

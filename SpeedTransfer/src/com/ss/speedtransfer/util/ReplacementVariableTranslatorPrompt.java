@@ -113,9 +113,11 @@ public class ReplacementVariableTranslatorPrompt {
 		final Shell settingsShell = new Shell(shell, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL | SWT.RESIZE);
 
 		settingsShell.setText("Query Value Selection");
-		Point location = shell.getLocation();
-		settingsShell.setBounds(location.x + 30, location.y + 150, 500, 200);
-
+		settingsShell.setSize(500, 200);
+		settingsShell.setLayout(new FillLayout());
+		
+		UIHelper.instance().centerInParent(shell, settingsShell);
+		
 		settingsShell.setLayout(new FillLayout());
 
 		toolkit = new FormToolkit(settingsShell.getDisplay());
@@ -282,11 +284,12 @@ public class ReplacementVariableTranslatorPrompt {
 		gd = new GridData(SWT.LEFT, SWT.TOP, false, false, 3, 1);
 		gd.heightHint = 3;
 		dummy.setLayoutData(gd);
-
-		location = shell.getLocation();
+		
 		Point shellSize = settingsShell.computeSize(SWT.DEFAULT, (replacementValueControls.size() * 27) + 80);
 		int height = Math.min(shellSize.y, 500);
-		settingsShell.setBounds(location.x + 30, location.y + 150, 500, height);
+		settingsShell.setSize(500, height);
+		
+		UIHelper.instance().centerInParent(shell, settingsShell);
 
 		settingsShell.setDefaultButton(okButton);
 

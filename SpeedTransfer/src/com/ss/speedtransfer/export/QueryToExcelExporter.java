@@ -30,7 +30,6 @@ import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Cursor;
-import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -405,9 +404,10 @@ public class QueryToExcelExporter extends AbstractQueryExporter implements Query
 		Shell shell = UIHelper.instance().getActiveShell();
 		final Shell settingsShell = new Shell(shell, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL | SWT.RESIZE);
 		settingsShell.setText("Export to Excel");
-		Point location = shell.getLocation();
-		settingsShell.setBounds(location.x + 30, location.y + 150, 500, 520);
+		settingsShell.setSize(500, 520);
 		settingsShell.setLayout(new FillLayout());
+		
+		UIHelper.instance().centerInParent(shell, settingsShell);
 
 		toolkit = new FormToolkit(settingsShell.getDisplay());
 		form = toolkit.createForm(settingsShell);

@@ -64,10 +64,8 @@
 			<fileset dir="${jarloader.dir}" />
 		</copy>
 
-		<copy todir="${launcher.dir}/jre/bin">
-			<fileset dir="${jre.dir}/bin" >
-				<include name="javaw.exe" />
-			</fileset>
+		<copy todir="${launcher.dir}/jre">
+			<fileset dir="${jre.dir}" />
 		</copy>
 		
 		<copy file="${queryfile.path}" tofile="${launcher.dir}/qd.xml" />

@@ -13,7 +13,6 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -55,9 +54,10 @@ public class NewProjectHandler extends AbstractHandler {
 		Shell shell = UIHelper.instance().getActiveShell();
 		final Shell settingsShell = new Shell(shell, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL | SWT.RESIZE);
 		settingsShell.setText("New Project");
-		Point location = shell.getLocation();
-		settingsShell.setBounds(location.x + 30, location.y + 150, 500, 180);
-
+		settingsShell.setSize(500, 180);
+		
+		UIHelper.instance().centerInParent(shell, settingsShell);
+		
 		GridLayout gl = new GridLayout(2, false);
 		settingsShell.setLayout(gl);
 

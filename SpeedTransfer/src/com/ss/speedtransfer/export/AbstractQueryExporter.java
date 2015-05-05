@@ -334,11 +334,18 @@ public abstract class AbstractQueryExporter implements QueryExporter {
 		final Map<String, Object> tempProps = properties;
 		final String exportToFile = (String) properties.get(EXPORT_TO_FILE);
 
-		Shell shell = new Shell();
+		//Shell shell = new Shell();
+		
+		Shell shell = UIHelper.instance().getActiveShell();
+		final Shell progressShell = new Shell(shell, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL | SWT.RESIZE);
+		
+		UIHelper.instance().centerInParent(shell, progressShell);
+		
 		try {
 			final int totalRows = getTotalRows(sql);
 
-			ProgressMonitorDialog pmd = new ProgressMonitorDialog(shell);
+			ProgressMonitorDialog pmd = new ProgressMonitorDialog(progressShell);
+
 			pmd.run(true, true, new IRunnableWithProgress() {
 				public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
 					if (totalRows > 0) {
@@ -363,7 +370,7 @@ public abstract class AbstractQueryExporter implements QueryExporter {
 			});
 		} catch (InterruptedException e) {
 			cancel = true;
-			MessageDialog.openInformation(shell, "Cancelled", SSUtil.getMessage(e));
+			MessageDialog.openInformation(progressShell, "Cancelled", SSUtil.getMessage(e));
 		} catch (Exception e) {
 			cancel = true;
 			UIHelper.instance().showErrorMsg("Error", SSUtil.getMessage(e));
