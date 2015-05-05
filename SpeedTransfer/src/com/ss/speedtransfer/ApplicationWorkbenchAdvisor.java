@@ -4,8 +4,8 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.application.IWorkbenchWindowConfigurer;
 import org.eclipse.ui.application.WorkbenchWindowAdvisor;
 
-import com.ss.speedtransfer.util.SSUtil;
 import com.ss.speedtransfer.util.LicenseManager;
+import com.ss.speedtransfer.util.SSUtil;
 import com.ss.speedtransfer.util.StringHelper;
 import com.ss.speedtransfer.util.UIHelper;
 

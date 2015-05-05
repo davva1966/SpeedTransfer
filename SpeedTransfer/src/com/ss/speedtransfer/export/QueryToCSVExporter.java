@@ -17,7 +17,6 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -34,9 +33,9 @@ import org.w3c.dom.Element;
 
 import com.ss.speedtransfer.SpeedTransferPlugin;
 import com.ss.speedtransfer.model.QueryDefinition;
-import com.ss.speedtransfer.util.SSUtil;
 import com.ss.speedtransfer.util.ReplacementVariableTranslatorPrompt;
 import com.ss.speedtransfer.util.SQLHelper;
+import com.ss.speedtransfer.util.SSUtil;
 import com.ss.speedtransfer.util.UIHelper;
 
 
@@ -278,10 +277,11 @@ public class QueryToCSVExporter extends AbstractQueryExporter implements QueryEx
 		Shell shell = UIHelper.instance().getActiveShell();
 		final Shell settingsShell = new Shell(shell, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL | SWT.RESIZE);
 		settingsShell.setText("Export to CSV");
-		Point location = shell.getLocation();
-		settingsShell.setBounds(location.x + 30, location.y + 150, 500, 280);
+		settingsShell.setSize(500, 280);
 		settingsShell.setLayout(new FillLayout());
-
+		
+		UIHelper.instance().centerInParent(shell, settingsShell);
+		
 		toolkit = new FormToolkit(settingsShell.getDisplay());
 		form = toolkit.createForm(settingsShell);
 

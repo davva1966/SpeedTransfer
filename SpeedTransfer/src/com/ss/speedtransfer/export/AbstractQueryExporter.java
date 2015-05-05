@@ -20,7 +20,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.forms.widgets.Form;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.progress.IProgressConstants;
@@ -30,11 +29,12 @@ import com.ss.speedtransfer.model.QueryDefinition;
 import com.ss.speedtransfer.model.SQLScratchPad;
 import com.ss.speedtransfer.util.CommentPrompt;
 import com.ss.speedtransfer.util.ConnectionManager;
-import com.ss.speedtransfer.util.SSUtil;
+import com.ss.speedtransfer.util.EnvironmentHelper;
 import com.ss.speedtransfer.util.MemoryWatcher;
 import com.ss.speedtransfer.util.ReplacementVariableTranslatorPrompt;
 import com.ss.speedtransfer.util.SQLExecuter;
 import com.ss.speedtransfer.util.SQLHelper;
+import com.ss.speedtransfer.util.SSUtil;
 import com.ss.speedtransfer.util.UIHelper;
 
 
@@ -82,12 +82,14 @@ public abstract class AbstractQueryExporter implements QueryExporter {
 	public AbstractQueryExporter(QueryDefinition queryDef) {
 		super();
 		this.queryDef = queryDef;
-		useEclipse = false;
-		try {
-			if (PlatformUI.isWorkbenchRunning())
-				useEclipse = true;
-		} catch (Exception e) {
-		}
+		
+//		useEclipse = false;
+//		try {
+//			if (PlatformUI.isWorkbenchRunning())
+//				useEclipse = true;
+//		} catch (Exception e) {
+//		}
+		useEclipse = EnvironmentHelper.isExecutableEnvironment() == false;
 
 		if (useEclipse == false) {
 			canSaveDefaults = false;
@@ -230,8 +232,9 @@ public abstract class AbstractQueryExporter implements QueryExporter {
 	}
 
 	protected Connection getConnection() throws Exception {
-		if (connection == null)
+		if (connection == null) {
 			connection = ConnectionManager.getConnection(queryDef);
+		}
 
 		return connection;
 	}
@@ -331,11 +334,18 @@ public abstract class AbstractQueryExporter implements QueryExporter {
 		final Map<String, Object> tempProps = properties;
 		final String exportToFile = (String) properties.get(EXPORT_TO_FILE);
 
-		Shell shell = new Shell();
+		//Shell shell = new Shell();
+		
+		Shell shell = UIHelper.instance().getActiveShell();
+		final Shell progressShell = new Shell(shell, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL | SWT.RESIZE);
+		
+		UIHelper.instance().centerInParent(shell, progressShell);
+		
 		try {
 			final int totalRows = getTotalRows(sql);
 
-			ProgressMonitorDialog pmd = new ProgressMonitorDialog(shell);
+			ProgressMonitorDialog pmd = new ProgressMonitorDialog(progressShell);
+
 			pmd.run(true, true, new IRunnableWithProgress() {
 				public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
 					if (totalRows > 0) {
@@ -360,7 +370,7 @@ public abstract class AbstractQueryExporter implements QueryExporter {
 			});
 		} catch (InterruptedException e) {
 			cancel = true;
-			MessageDialog.openInformation(shell, "Cancelled", SSUtil.getMessage(e));
+			MessageDialog.openInformation(progressShell, "Cancelled", SSUtil.getMessage(e));
 		} catch (Exception e) {
 			cancel = true;
 			UIHelper.instance().showErrorMsg("Error", SSUtil.getMessage(e));

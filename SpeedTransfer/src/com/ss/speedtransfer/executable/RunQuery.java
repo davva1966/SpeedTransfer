@@ -1,7 +1,9 @@
 package com.ss.speedtransfer.executable;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.text.DateFormat;
 import java.util.Date;
@@ -16,7 +18,6 @@ import com.ss.speedtransfer.model.QueryDefinition;
 import com.ss.speedtransfer.util.SSUtil;
 import com.ss.speedtransfer.util.StringHelper;
 import com.ss.speedtransfer.util.UIHelper;
-
 
 public class RunQuery {
 
@@ -97,6 +98,25 @@ public class RunQuery {
 
 		exporter.export();
 
+	}
+
+	public static void log1(String entry) {
+		BufferedWriter writer = null;
+		try {
+			long time = System.currentTimeMillis();
+			FileWriter fileWriter = new FileWriter("D://executable_log//log.txt", true);
+			writer = new BufferedWriter(fileWriter);
+			writer.write(time + ": " + entry);
+			writer.newLine();
+
+		} catch (Exception e) {
+		} finally {
+			try {
+				if (writer != null)
+					writer.close();
+			} catch (Exception e2) {
+			}
+		}
 	}
 
 }

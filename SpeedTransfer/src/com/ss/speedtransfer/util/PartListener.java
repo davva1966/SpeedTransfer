@@ -14,7 +14,6 @@ import com.ss.speedtransfer.ui.view.QueryExcelResultView;
 import com.ss.speedtransfer.ui.view.QueryResultView;
 import com.ss.speedtransfer.ui.view.StartView;
 
-
 public class PartListener implements IPartListener2 {
 
 	private static PartListener instance = null;
@@ -58,7 +57,7 @@ public class PartListener implements IPartListener2 {
 
 	@Override
 	public void partClosed(IWorkbenchPartReference partRef) {
-		maybeShowStartView(partRef.getPage());
+		// maybeShowStartView(partRef.getPage());
 
 	}
 
@@ -97,6 +96,9 @@ public class PartListener implements IPartListener2 {
 		if (partRef.getId().equalsIgnoreCase(CommentsView.ID)) {
 			hideStartView(partRef);
 		}
+		if (partRef.getId().equalsIgnoreCase("org.eclipse.search.ui.views.SearchView")) {
+			hideStartView(partRef);
+		}
 
 	}
 
@@ -106,9 +108,13 @@ public class PartListener implements IPartListener2 {
 	}
 
 	protected void hideStartView(IWorkbenchPartReference partRef) {
-		IViewReference viewRef = partRef.getPage().findViewReference(StartView.ID);
+		hideStartView(partRef.getPage());
+	}
+
+	protected void hideStartView(IWorkbenchPage page) {
+		IViewReference viewRef = page.findViewReference(StartView.ID);
 		if (viewRef != null)
-			partRef.getPage().hideView(viewRef);
+			page.hideView(viewRef);
 	}
 
 	public void maybeShowStartView(IWorkbenchPage page) {
@@ -119,18 +125,21 @@ public class PartListener implements IPartListener2 {
 				editorsOpen = false;
 			IViewReference[] viewRefs = page.getViewReferences();
 			for (IViewReference viewRef : viewRefs) {
-				if (viewRef.getId().equalsIgnoreCase(QueryResultView.ID) || viewRef.getId().equalsIgnoreCase(QueryExcelResultView.ID) || viewRef.getId().equalsIgnoreCase(CommentsView.ID)) {
+				if (viewRef.getId().equalsIgnoreCase(QueryResultView.ID) || viewRef.getId().equalsIgnoreCase(QueryExcelResultView.ID) || viewRef.getId().equalsIgnoreCase(CommentsView.ID)
+						|| viewRef.getId().equalsIgnoreCase("org.eclipse.search.ui.views.SearchView")) {
 					viewsOpen = true;
 					break;
 				}
 
 			}
 
-			if (editorsOpen == false)
+			if (viewsOpen == false && editorsOpen == false) {
 				page.setEditorAreaVisible(false);
-
-			if (viewsOpen == false && editorsOpen == false)
 				page.showView(StartView.ID, null, IWorkbenchPage.VIEW_VISIBLE);
+			} else {
+				hideStartView(page);
+				page.setEditorAreaVisible(true);
+			}
 
 		} catch (Exception e) {
 		}

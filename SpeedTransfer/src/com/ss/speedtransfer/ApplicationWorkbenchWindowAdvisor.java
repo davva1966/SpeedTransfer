@@ -7,6 +7,8 @@ import java.util.Set;
 
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.jface.action.IContributionItem;
+import org.eclipse.jface.action.MenuManager;
 import org.eclipse.ui.IEditorReference;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPreferenceConstants;
@@ -16,13 +18,13 @@ import org.eclipse.ui.application.ActionBarAdvisor;
 import org.eclipse.ui.application.IActionBarConfigurer;
 import org.eclipse.ui.application.IWorkbenchWindowConfigurer;
 import org.eclipse.ui.application.WorkbenchWindowAdvisor;
+import org.eclipse.ui.internal.WorkbenchWindow;
 
 import com.ss.speedtransfer.ui.editor.querydef.QueryDefinitonEditor;
 import com.ss.speedtransfer.ui.editor.querydef.SQLScratchPadEditor;
-import com.ss.speedtransfer.util.PartListener;
 import com.ss.speedtransfer.util.LicenseManager;
+import com.ss.speedtransfer.util.PartListener;
 import com.ss.speedtransfer.util.UIHelper;
-
 
 public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 
@@ -46,9 +48,9 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 		PlatformUI.getPreferenceStore().setValue(IWorkbenchPreferenceConstants.SHOW_TRADITIONAL_STYLE_TABS, false);
 
 		if (LicenseManager.isStudioVersion())
-			configurer.setTitle(configurer.getTitle() + " (SpeedTransfer Developer Studio)");
+			configurer.setTitle("SpeedTransfer Developer Studio");
 		else
-			configurer.setTitle(configurer.getTitle() + " (SpeedTransfer Browser)");
+			configurer.setTitle("SpeedTransfer Browser");
 
 		if (LicenseManager.isTrial())
 			configurer.setTitle(configurer.getTitle() + ", Trial version " + LicenseManager.getDaysRemaining() + " days remaining.");
@@ -68,6 +70,14 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 			closeOpenQueryEditors();
 
 		PartListener.instance().maybeShowStartView(UIHelper.instance().getActivePage());
+
+		// Completely hide the workbench menu
+		WorkbenchWindow workbenchWin = (WorkbenchWindow) PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+		MenuManager menuManager = workbenchWin.getMenuManager();
+		IContributionItem[] items = menuManager.getItems();
+		for (IContributionItem item : items) {
+			item.setVisible(false);
+		}
 
 	}
 

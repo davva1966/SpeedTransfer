@@ -56,7 +56,10 @@ public class OpenSQLBuilderWizardAction extends Action {
 						wizard.init(wb, null);
 
 						// Instantiates the wizard container with the wizard and opens it
-						final WizardDialog dialog = new WizardDialog(new Shell(), wizard);
+						Shell activeShell = wb.getActiveWorkbenchWindow().getShell();
+						if (activeShell == null)
+							activeShell = new Shell();
+						final WizardDialog dialog = new WizardDialog(activeShell, wizard);
 
 						dialog.setPageSize(730, 500);
 						BusyIndicator.showWhile(null, new Runnable() {

@@ -20,10 +20,10 @@ import com.ss.speedtransfer.ui.editor.querydef.QueryDefinitonEditor;
 import com.ss.speedtransfer.ui.editor.querydef.SQLScratchPadEditor;
 import com.ss.speedtransfer.util.CommentPrompt;
 import com.ss.speedtransfer.util.ConnectionManager;
-import com.ss.speedtransfer.util.SSUtil;
 import com.ss.speedtransfer.util.ReplacementVariableTranslatorPrompt;
 import com.ss.speedtransfer.util.SQLExecuter;
 import com.ss.speedtransfer.util.SQLHelper;
+import com.ss.speedtransfer.util.SSUtil;
 import com.ss.speedtransfer.util.StringHelper;
 import com.ss.speedtransfer.util.UIHelper;
 

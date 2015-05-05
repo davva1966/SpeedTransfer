@@ -153,7 +153,7 @@ public class SQLGroupingSelectionComp extends SQLGenericEditComp {
 			shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL | SWT.RESIZE);
 
 			Point location = parent.getLocation();
-			shell.setBounds(location.x + 50, location.y + 70, 350, 120);
+			shell.setBounds(location.x + 50, location.y + 70, 350, 140);
 			shell.setText("Edit Expression");
 
 			this.groupPart = groupPart;

@@ -12,6 +12,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PlatformUI;
 
+import com.ss.speedtransfer.util.EnvironmentHelper;
 import com.ss.speedtransfer.util.PickWorkspaceDialog;
 
 
@@ -108,7 +109,9 @@ public class Application implements IApplication {
 	 * @see org.eclipse.equinox.app.IApplication#stop()
 	 */
 	public void stop() {
-		if (!PlatformUI.isWorkbenchRunning())
+//		if (!PlatformUI.isWorkbenchRunning())
+//			return;
+		if (EnvironmentHelper.isExecutableEnvironment())
 			return;
 		final IWorkbench workbench = PlatformUI.getWorkbench();
 		final Display display = workbench.getDisplay();

@@ -9,9 +9,8 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.handlers.HandlerUtil;
 
 import com.ss.speedtransfer.model.DBConnection;
-import com.ss.speedtransfer.util.SSUtil;
 import com.ss.speedtransfer.util.DefaultDBManager;
-
+import com.ss.speedtransfer.util.SSUtil;
 
 public class SetDefaultDBHandler extends AbstractHandler {
 
@@ -24,11 +23,7 @@ public class SetDefaultDBHandler extends AbstractHandler {
 				IStructuredSelection sel = (IStructuredSelection) selection;
 				Object selectedItem = sel.getFirstElement();
 				if (DBConnection.isDBConnectionFile(selectedItem)) {
-					String parm = event.getParameter("com.ss.speedtransfer.reset");
-					if (parm == null || parm.trim().length() == 0 || parm.trim().equalsIgnoreCase("false"))
-						DefaultDBManager.instance().makeDefault((IFile) selectedItem);
-					if (parm != null && parm.trim().length() > 0 && parm.trim().equalsIgnoreCase("true"))
-						DefaultDBManager.instance().removeDefault();
+					DefaultDBManager.instance().makeDefault((IFile) selectedItem);
 				}
 			}
 

@@ -10,9 +10,9 @@ import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.formatter.IContentFormatter;
 import org.eclipse.jface.text.formatter.IFormattingStrategy;
 
-import com.ss.speedtransfer.util.SSUtil;
 import com.ss.speedtransfer.util.SQLHelper;
 import com.ss.speedtransfer.util.SQLWarningDialog;
+import com.ss.speedtransfer.util.SSUtil;
 import com.ss.speedtransfer.util.StringHelper;
 import com.ss.speedtransfer.util.parser.sql.ParseException;
 import com.ss.speedtransfer.util.parser.sql.SQLParser;

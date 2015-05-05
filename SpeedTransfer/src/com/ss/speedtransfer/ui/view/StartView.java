@@ -11,16 +11,13 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.IPartListener;
 import org.eclipse.ui.IWorkbenchPart;
-import org.eclipse.ui.internal.WorkbenchPage;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.ui.themes.IThemeManager;
 
 import com.ss.speedtransfer.SpeedTransferPlugin;
 import com.ss.speedtransfer.util.LicenseManager;
-import com.ss.speedtransfer.util.UIHelper;
 
 
 /**
@@ -52,7 +49,7 @@ public class StartView extends ViewPart implements PaintListener {
 	protected int maxY = 0;
 
 	protected Font font = null;
-
+	
 	public void createPartControl(Composite parent) {
 		setPartName("Welcome");
 		transparentImage = SpeedTransferPlugin.getImageDescriptor("DataTool_128.png").createImage();
@@ -64,12 +61,12 @@ public class StartView extends ViewPart implements PaintListener {
 
 		font = new Font(parent.getDisplay(), "Arial", 30, SWT.BOLD);
 		paintCanvas.addPaintListener(this);
-		paintViewBar();
+//		paintViewBar();
 
 		partListener = new IPartListener() {
 			public void partActivated(IWorkbenchPart part) {
 				if (getPartName().equals(part.getTitle())) {
-					paintViewBar();
+//					paintViewBar();
 				}
 			}
 
@@ -137,13 +134,13 @@ public class StartView extends ViewPart implements PaintListener {
 		return colorRegistry.get(name);
 	}
 
-	private void paintViewBar() {
-		WorkbenchPage p = (WorkbenchPage) getSite().getPage();
-		Color color = new Color(UIHelper.instance().getDisplay(), new RGB(238, 239, 238));
-		Control[] ctrls = p.getClientComposite().getTabList();
-		for (Control ctrl : ctrls) {
-			ctrl.setBackground(color);
-		}
-	}
+//	private void paintViewBar() {
+//		WorkbenchPage p = (WorkbenchPage) getSite().getPage();
+//		Color color = new Color(UIHelper.instance().getDisplay(), new RGB(238, 239, 238));
+//		Control[] ctrls = p.getClientComposite().getTabList();
+//		for (Control ctrl : ctrls) {
+//			ctrl.setBackground(color);
+//		}
+//	}
 
 }

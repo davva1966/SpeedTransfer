@@ -9,8 +9,8 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.actions.OpenFileAction;
 
 import com.ss.speedtransfer.model.QueryDefinition;
-import com.ss.speedtransfer.util.SSUtil;
 import com.ss.speedtransfer.util.LicenseManager;
+import com.ss.speedtransfer.util.SSUtil;
 import com.ss.speedtransfer.util.UIHelper;
 
 

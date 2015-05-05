@@ -7,6 +7,8 @@ import org.eclipse.ui.forms.FormColors;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
+import com.ss.speedtransfer.util.EnvironmentHelper;
+
 /**
  * The activator class controls the plug-in life cycle
  */
@@ -17,7 +19,7 @@ public class SpeedTransferPlugin extends AbstractUIPlugin {
 
 	// The shared instance
 	private static SpeedTransferPlugin plugin;
-	
+
 	private FormColors formColors;
 
 	/**
@@ -38,17 +40,17 @@ public class SpeedTransferPlugin extends AbstractUIPlugin {
 		plugin = this;
 
 		// Create top project if none exists
-//		IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
-//		if (root.getProjects().length == 0) {
-//			IProgressMonitor progressMonitor = new NullProgressMonitor();
-//			IProject project = root.getProject("Query Definitions");
-//			try {
-//				project.create(progressMonitor);
-//				project.open(progressMonitor);
-//				project.refreshLocal(IResource.DEPTH_ZERO, null);
-//			} catch (Exception e) {
-//			}
-//		}
+		// IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
+		// if (root.getProjects().length == 0) {
+		// IProgressMonitor progressMonitor = new NullProgressMonitor();
+		// IProject project = root.getProject("Query Definitions");
+		// try {
+		// project.create(progressMonitor);
+		// project.open(progressMonitor);
+		// project.refreshLocal(IResource.DEPTH_ZERO, null);
+		// } catch (Exception e) {
+		// }
+		// }
 
 	}
 
@@ -82,10 +84,21 @@ public class SpeedTransferPlugin extends AbstractUIPlugin {
 	 * @return the image descriptor
 	 */
 	public static ImageDescriptor getImageDescriptor(String path) {
-		
+
 		if (path.contains("/") == false)
 			path = "resources/images/" + path;
-		
+
+		ImageDescriptor desc = null;
+		if (EnvironmentHelper.isExecutableEnvironment())
+			desc = getImageDescriptorFromResource(path);
+		else
+			desc = getImageDescriptorFromPlugin(path);
+
+		return desc;
+	}
+
+	protected static ImageDescriptor getImageDescriptorFromPlugin(String path) {
+
 		ImageDescriptor desc = null;
 		if (path.indexOf('.') != -1)
 			desc = AbstractUIPlugin.imageDescriptorFromPlugin(PLUGIN_ID, path);
@@ -93,6 +106,22 @@ public class SpeedTransferPlugin extends AbstractUIPlugin {
 			desc = AbstractUIPlugin.imageDescriptorFromPlugin(PLUGIN_ID, path + ".gif");
 		if (desc == null)
 			desc = AbstractUIPlugin.imageDescriptorFromPlugin(PLUGIN_ID, path + ".jpg");
+
+		return desc;
+	}
+
+	protected static ImageDescriptor getImageDescriptorFromResource(String path) {
+
+		if (path.startsWith("/") == false)
+			path = "/" + path;
+
+		ImageDescriptor desc = null;
+		if (path.indexOf('.') != -1)
+			desc = ImageDescriptor.createFromFile(SpeedTransferPlugin.class, path);
+		else
+			desc = ImageDescriptor.createFromFile(SpeedTransferPlugin.class, path + ".gif");
+		if (desc == null)
+			desc = ImageDescriptor.createFromFile(SpeedTransferPlugin.class, path + ".jpg");
 
 		return desc;
 	}
@@ -113,7 +142,7 @@ public class SpeedTransferPlugin extends AbstractUIPlugin {
 
 		return dSection;
 	}
-	
+
 	public FormColors getFormColors(Display display) {
 		if (formColors == null) {
 			formColors = new FormColors(display);

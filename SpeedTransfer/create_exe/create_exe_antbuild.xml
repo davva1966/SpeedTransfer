@@ -67,6 +67,7 @@
 		<copy todir="${launcher.dir}/jre">
 			<fileset dir="${jre.dir}" />
 		</copy>
+		
 		<copy file="${queryfile.path}" tofile="${launcher.dir}/qd.xml" />
 		<copy file="${dbconfile.path}" tofile="${launcher.dir}/dbcon.xml" />
 

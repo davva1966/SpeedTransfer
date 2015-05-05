@@ -76,7 +76,7 @@
                visible="true">
          </view>
          <view
-               closeable="false"
+               closeable="true"
                id="com.ss.speedtransfer.startView"
                minimized="false"
                moveable="false"
@@ -85,7 +85,7 @@
                relative="org.eclipse.ui.editorss"
                showTitle="true"
                standalone="false"
-               visible="true">
+               visible="false">
          </view>
          <view
                closeable="true"
@@ -137,6 +137,18 @@
          </view>
          <view
                closeable="true"
+               id="org.eclipse.search.ui.views.SearchView"
+               minimized="false"
+               moveable="true"
+               ratio="0.75"
+               relationship="stack"
+               relative="com.ss.speedtransfer.queryExcelResultView"
+               showTitle="true"
+               standalone="false"
+               visible="true">
+         </view>
+         <view
+               closeable="true"
                id="org.eclipse.ui.views.ProgressView"
                minimized="false"
                moveable="true"
@@ -146,18 +158,6 @@
                showTitle="true"
                standalone="false"
                visible="true">
-         </view>
-         <view
-               closeable="true"
-               id="org.eclipse.search.*"
-               minimized="false"
-               moveable="true"
-               ratio="0.75"
-               relationship="stack"
-               relative="com.ss.speedtransfer.startView"
-               showTitle="true"
-               standalone="false"
-               visible="false">
          </view>
       </perspectiveExtension>
    </extension>
@@ -206,7 +206,7 @@
             class="com.ss.speedtransfer.ui.view.StartView"
             id="com.ss.speedtransfer.startView"
             name="Welcome"
-            restorable="true">
+            restorable="false">
       </view>
       <view
             allowMultiple="true"
@@ -317,19 +317,15 @@
          <command
                commandId="com.ss.speedtransfer.setDefaultDB"
                style="push">
-            <parameter
-                  name="com.ss.speedtransfer.reset"
-                  value="false">
-            </parameter>
+            <visibleWhen>
+            	<reference
+                	definitionId="com.ss.speedtransfer.dbConnection">
+            	</reference>
+         	</visibleWhen>
          </command>
          <command
-               commandId="com.ss.speedtransfer.setDefaultDB"
-               label="Reset Default Connection"
+               commandId="com.ss.speedtransfer.resetDefaultDB"
                style="push">
-            <parameter
-                  name="com.ss.speedtransfer.reset"
-                  value="true">
-            </parameter>
          </command>
          <separator
                name="com.ss.speedtransfer.separator4"
@@ -338,6 +334,11 @@
          <menu
                icon="resources/images/execute.gif"
                label="Run Query">
+            <visibleWhen>
+            	<reference
+                	definitionId="com.ss.speedtransfer.executableDefinition">
+            	</reference>
+         	</visibleWhen>
             <command
                   commandId="com.ss.speedtransfer.runQueryToTableCommand"
                   style="radio">
@@ -362,13 +363,14 @@
                </visibleWhen>
             </command>
          </menu>
-         <separator
-               name="com.ss.speedtransfer.separator3"
-               visible="true">
-         </separator>
          <menu
                icon="resources/images/export.gif"
                label="Export To">
+             <visibleWhen>
+            	<reference
+                	definitionId="com.ss.speedtransfer.executableDefinition">
+            	</reference>
+         	</visibleWhen>
             <command
                   commandId="com.ss.speedtransfer.exportToExcelCommand"
                   style="push">
@@ -389,6 +391,11 @@
          <command
                commandId="com.ss.speedtransfer.creteExecutableCommand"
                style="push">
+            <visibleWhen>
+            	<reference
+                	definitionId="com.ss.speedtransfer.queryDefinition">
+            	</reference>
+         	</visibleWhen>
          </command>
          <separator
                name="com.ss.speedtransfer.separator2"
@@ -397,6 +404,11 @@
          <command
                commandId="com.ss.speedtransfer.showCommentsCommand"
                style="push">
+           <visibleWhen>
+            	<reference
+                	definitionId="com.ss.speedtransfer.commentableDefinition">
+            	</reference>
+         	</visibleWhen>
          </command>
          <separator
                name="com.ss.speedtransfer.separator5"
@@ -418,6 +430,11 @@
          <command
                commandId="org.eclipse.ui.file.properties"
                style="push">
+           <visibleWhen>
+            	<reference
+                	definitionId="com.ss.speedtransfer.singleSelectionDefinition">
+            	</reference>
+         	</visibleWhen>
          </command>
       </menuContribution>
         <menuContribution
@@ -681,14 +698,12 @@
             name="Open with XML editor">
       </command>
       <command
-            description="Make this the default connection"
             id="com.ss.speedtransfer.setDefaultDB"
             name="Set as default connection">
-         <commandParameter
-               id="com.ss.speedtransfer.reset"
-               name="reset"
-               optional="true">
-         </commandParameter>
+      </command>
+      <command
+            id="com.ss.speedtransfer.resetDefaultDB"
+            name="Reset default connection">
       </command>
       <command
             id="com.ss.speedtransfer.showCommentsCommand"
@@ -896,6 +911,15 @@
          </enabledWhen>
       </handler>
       <handler
+            class="com.ss.speedtransfer.handlers.ResetDefaultDBHandler"
+            commandId="com.ss.speedtransfer.resetDefaultDB">
+         <enabledWhen>
+            <reference
+              definitionId="com.ss.speedtransfer.studioVersion">
+           	</reference>
+         </enabledWhen>
+      </handler>
+      <handler
             class="com.ss.speedtransfer.handlers.ShowCommentsHandler"
             commandId="com.ss.speedtransfer.showCommentsCommand">
   <enabledWhen>
@@ -1013,6 +1037,15 @@
    </extension>
    <extension
          point="org.eclipse.core.expressions.definitions">
+       <definition
+            id="com.ss.speedtransfer.singleSelectionDefinition">
+         <with
+               variable="selection">
+            <count
+                  value="1">
+            </count>
+         </with>
+      </definition>
       <definition
             id="com.ss.speedtransfer.projectOrFolderDefinition">
          <with
@@ -1102,7 +1135,34 @@
             </iterate>
          </with>
       </definition>
-            <definition
+      <definition
+            id="com.ss.speedtransfer.commentableDefinition">
+         <with
+               variable="selection">
+            <count
+                  value="1">
+            </count>
+            <iterate
+                  operator="and">
+               <and>
+                  <adapt
+                        type="org.eclipse.core.resources.IFile">
+                  </adapt>
+               </and>
+               <or>
+                  <test
+                        property="org.eclipse.core.resources.contentTypeId"
+                        value="com.ss.speedtransfer.queryContentType">
+                  </test>
+                  <test
+                        property="org.eclipse.core.resources.contentTypeId"
+                        value="com.ss.speedtransfer.dbConnectionContentType">
+                  </test>
+               </or>
+            </iterate>
+         </with>
+      </definition>
+      <definition
             id="com.ss.speedtransfer.executableEditor">
          <with
                variable="activePartId">
@@ -1251,6 +1311,14 @@
                name="preferenceCustomization"
                value="plugin_customization.ini">
          </property>
+		  <property
+				name="cssTheme"
+				value="org.eclipse.e4.ui.css.theme.e4_default">
+		  </property>
+		  <property
+				name="applicationCSSResources"
+          		value="platform:/plugin/org.eclipse.ui.themes/images/">
+		  </property>
       </product>
    </extension>
    <extension

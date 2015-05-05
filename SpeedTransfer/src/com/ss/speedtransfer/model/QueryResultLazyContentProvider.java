@@ -29,9 +29,9 @@ import org.eclipse.ui.progress.UIJob;
 import com.ss.speedtransfer.handlers.ToggleLazyLoadHandler;
 import com.ss.speedtransfer.ui.view.QueryResultView;
 import com.ss.speedtransfer.util.ConnectionManager;
-import com.ss.speedtransfer.util.SSUtil;
 import com.ss.speedtransfer.util.MemoryWatcher;
 import com.ss.speedtransfer.util.SQLHelper;
+import com.ss.speedtransfer.util.SSUtil;
 import com.ss.speedtransfer.util.UIHelper;
 
 

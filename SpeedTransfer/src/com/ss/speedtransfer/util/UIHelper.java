@@ -3,6 +3,7 @@ package com.ss.speedtransfer.util;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
@@ -15,7 +16,6 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 
 import com.ss.speedtransfer.SpeedTransferPlugin;
-
 
 /**
  * The <code>UIHelper</code> class
@@ -156,7 +156,7 @@ public class UIHelper {
 	public IWorkbenchWindow getActiveWindow() {
 		try {
 			return PlatformUI.getWorkbench().getActiveWorkbenchWindow();
-		} catch (Exception e) {
+		} catch (Throwable e) {
 		}
 
 		return null;
@@ -167,7 +167,7 @@ public class UIHelper {
 		Shell shell = null;
 		try {
 			shell = getActiveWindow().getShell();
-		} catch (Exception e) {
+		} catch (Throwable e) {
 		}
 		if (shell == null)
 			shell = new Shell();
@@ -179,7 +179,7 @@ public class UIHelper {
 	public IWorkbenchPage getActivePage() {
 		try {
 			return getActiveWindow().getActivePage();
-		} catch (Exception e) {
+		} catch (Throwable e) {
 		}
 
 		return null;
@@ -233,6 +233,18 @@ public class UIHelper {
 
 	public Display getDisplay() {
 		return PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell().getDisplay();
+	}
+
+	public void centerInParent(Shell parent, Shell shell) {
+		Rectangle parentBounds = parent.getBounds();
+		if (EnvironmentHelper.isExecutableEnvironment())
+			parentBounds = parent.getDisplay().getPrimaryMonitor().getBounds();
+
+		Rectangle shellBounds = shell.getBounds();
+
+		int x = parentBounds.x + (parentBounds.width - shellBounds.width) / 2;
+		int y = parentBounds.y + (parentBounds.height - shellBounds.height) / 2;
+		shell.setLocation(x, y);
 	}
 
 }
