@@ -182,6 +182,12 @@ public class SQLScratchPadEditor extends EditorPart implements XMLModelListener 
 	public boolean isDirty() {
 		return isDirty;
 	}
+	
+	@Override
+	public boolean isSaveOnCloseNeeded() {
+        // return isDirty();
+		return false;
+    }
 
 	@Override
 	public void createPartControl(Composite parent) {
