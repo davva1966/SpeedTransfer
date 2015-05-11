@@ -63,7 +63,7 @@ public class RunSQLAction extends Action {
 			type = (String) command.getState(RadioState.STATE_ID).getValue();
 		}
 
-		IAction action = new RunSQLToTableAction(queryDef);
+		IAction action;
 		if (type.equals("excel"))
 			action = new RunSQLToExcelAction(queryDef);
 		else

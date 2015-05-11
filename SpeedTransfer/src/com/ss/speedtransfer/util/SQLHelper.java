@@ -42,7 +42,7 @@ public class SQLHelper {
 			DatabaseMetaData md = con.getMetaData();
 
 			if (monitor != null) {
-				progress = SubMonitor.convert(monitor, rsmd.getColumnCount());
+				progress = SubMonitor.convert(monitor);
 				progress.beginTask("Retrieving column information from database...", rsmd.getColumnCount());
 			}
 
