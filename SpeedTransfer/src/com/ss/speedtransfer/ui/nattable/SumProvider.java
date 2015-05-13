@@ -1,4 +1,4 @@
-package com.ss.speedtransfer.ui.view;
+package com.ss.speedtransfer.ui.nattable;
 
 import java.math.BigDecimal;
 
@@ -33,10 +33,10 @@ public class SumProvider implements ISummaryProvider {
 					} catch (Exception e) {
 					}
 				} else {
-					return DEFAULT_SUMMARY_VALUE;
+					return "";
 				}
 			} else {
-				return DEFAULT_SUMMARY_VALUE;
+				return "";
 			}
 		}
 

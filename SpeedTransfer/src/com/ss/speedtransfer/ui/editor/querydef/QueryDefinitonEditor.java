@@ -18,6 +18,7 @@ import org.w3c.dom.Node;
 
 import com.ss.speedtransfer.model.QueryDefinition;
 import com.ss.speedtransfer.ui.view.QueryExcelResultView;
+import com.ss.speedtransfer.ui.view.QueryResultNatTableView;
 import com.ss.speedtransfer.ui.view.QueryResultView;
 import com.ss.speedtransfer.util.DBConnectionResourceListener;
 import com.ss.speedtransfer.util.ReplacementVariableTranslator;
@@ -31,7 +32,6 @@ import com.ss.speedtransfer.xml.editor.XMLFormEditor;
 import com.ss.speedtransfer.xml.editor.XMLFormPageBlock;
 import com.ss.speedtransfer.xml.editor.XMLModel;
 import com.ss.speedtransfer.xml.editor.XMLPartActivationListener;
-
 
 public class QueryDefinitonEditor extends XMLFormEditor {
 
@@ -91,13 +91,18 @@ public class QueryDefinitonEditor extends XMLFormEditor {
 		}
 
 		try {
-			IViewReference viewRef = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().findViewReference(QueryResultView.ID, id);
+			IViewReference viewRef = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().findViewReference(QueryResultNatTableView.ID, id);
 			if (viewRef != null) {
-				PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().showView(QueryResultView.ID, id, IWorkbenchPage.VIEW_VISIBLE);
+				PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().showView(QueryResultNatTableView.ID, id, IWorkbenchPage.VIEW_VISIBLE);
 			} else {
-				viewRef = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().findViewReference(QueryExcelResultView.ID, id);
-				if (viewRef != null)
-					PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().showView(QueryExcelResultView.ID, id, IWorkbenchPage.VIEW_VISIBLE);
+				viewRef = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().findViewReference(QueryResultView.ID, id);
+				if (viewRef != null) {
+					PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().showView(QueryResultView.ID, id, IWorkbenchPage.VIEW_VISIBLE);
+				} else {
+					viewRef = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().findViewReference(QueryExcelResultView.ID, id);
+					if (viewRef != null)
+						PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().showView(QueryExcelResultView.ID, id, IWorkbenchPage.VIEW_VISIBLE);
+				}
 			}
 
 		} catch (Exception e) {
@@ -183,8 +188,7 @@ public class QueryDefinitonEditor extends XMLFormEditor {
 		}
 
 		if (message != null) {
-			SQLWarningDialog dialog = new SQLWarningDialog("The SQL could potentially have errors." + StringHelper.getNewLine() + StringHelper.getNewLine() + "Do you want to save the query anyway?",
-					message);
+			SQLWarningDialog dialog = new SQLWarningDialog("The SQL could potentially have errors." + StringHelper.getNewLine() + StringHelper.getNewLine() + "Do you want to save the query anyway?", message);
 			int response = dialog.open();
 			if (response == 0) {
 				validated = true;

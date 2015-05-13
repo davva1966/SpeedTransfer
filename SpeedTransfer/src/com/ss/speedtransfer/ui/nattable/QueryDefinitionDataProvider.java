@@ -1,4 +1,4 @@
-package com.ss.speedtransfer.ui.view;
+package com.ss.speedtransfer.ui.nattable;
 
 import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;

@@ -8,7 +8,7 @@
  * Contributors:
  *     Original authors and others - initial API and implementation
  ******************************************************************************/
-package com.ss.speedtransfer.ui.view;
+package com.ss.speedtransfer.ui.nattable;
 
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
 

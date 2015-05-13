@@ -2,6 +2,7 @@ package com.ss.speedtransfer.ui.view;
 
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.nebula.widgets.nattable.NatTable;
+import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
 import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.DefaultNatTableStyleConfiguration;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
@@ -24,9 +25,10 @@ import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.summaryrow.DefaultSummaryRowConfiguration;
 import org.eclipse.nebula.widgets.nattable.summaryrow.SummaryRowConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.summaryrow.SummaryRowLayer;
-import org.eclipse.nebula.widgets.nattable.ui.menu.HeaderMenuConfiguration;
+import org.eclipse.nebula.widgets.nattable.util.GCFactory;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
+import org.eclipse.swt.custom.BusyIndicator;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -34,12 +36,21 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.part.ViewPart;
 
 import com.ss.speedtransfer.model.QueryDefinition;
+import com.ss.speedtransfer.ui.nattable.QueryDefinitionColumnHeadingDataProvider;
+import com.ss.speedtransfer.ui.nattable.QueryDefinitionDataProvider;
+import com.ss.speedtransfer.ui.nattable.QueryDefinitionResultTableMenuConfiguration;
+import com.ss.speedtransfer.ui.nattable.ResizeAllColumnsCommand;
+import com.ss.speedtransfer.ui.nattable.SumProvider;
+import com.ss.speedtransfer.util.UIHelper;
 
 public class QueryResultNatTableView extends ViewPart {
 
 	public static final String ID = "com.ss.speedtransfer.queryResultNatTableView";
 	protected QueryDefinition queryDefinition;
 	protected QueryDefinitionDataProvider dataProvider = new QueryDefinitionDataProvider();
+
+	protected Composite parent;
+	protected boolean showSummaryRow = false;
 
 	protected ConfigRegistry configRegistry;
 	protected BodyLayerStack bodyLayer;
@@ -62,7 +73,16 @@ public class QueryResultNatTableView extends ViewPart {
 
 	@Override
 	public void createPartControl(Composite parent) {
+		this.parent = parent;
 		parent.setLayout(new GridLayout());
+		buildNatTable();
+
+	}
+
+	protected void buildNatTable() {
+
+		if (natTable != null)
+			natTable.dispose();
 
 		configRegistry = new ConfigRegistry();
 
@@ -82,21 +102,46 @@ public class QueryResultNatTableView extends ViewPart {
 		natTable = new NatTable(parent, gridLayer, false);
 
 		// Configuration
-		natTable.addConfiguration(new SummaryRowConfiguration(dataProvider));
+		if (showSummaryRow)
+			natTable.addConfiguration(new SummaryRowConfiguration(dataProvider));
 		natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
-		natTable.addConfiguration(new HeaderMenuConfiguration(natTable));
+		natTable.addConfiguration(new QueryDefinitionResultTableMenuConfiguration(natTable, bodyLayer.getSelectionLayer()));
 		natTable.addConfiguration(new DefaultFreezeGridBindings());
 		natTable.setConfigRegistry(configRegistry);
 
 		natTable.configure();
 
 		GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);
+		
+		parent.layout();
 	}
 
 	@Override
 	public void setFocus() {
-		// TODO Auto-generated method stub
+		// viewer.getControl().setFocus();
+	}
 
+	public void autoSizeColumns() {
+		BusyIndicator.showWhile(UIHelper.instance().getDisplay(), new Runnable() {
+			public void run() {
+				ILayerCommand command = new ResizeAllColumnsCommand(natTable, dataProvider.getColumnCount(), 1, configRegistry, new GCFactory(natTable));
+				natTable.doCommand(command);
+			}
+		});
+	}
+
+	public void toggleSummaryRow() {
+		BusyIndicator.showWhile(UIHelper.instance().getDisplay(), new Runnable() {
+			public void run() {
+				if (showSummaryRow) {
+					showSummaryRow = false;
+				} else {
+					showSummaryRow = true;
+				}
+				buildNatTable();
+				natTable.refresh();
+			}
+		});
 	}
 
 	public class BodyLayerStack extends AbstractLayerTransform {
@@ -107,9 +152,13 @@ public class QueryResultNatTableView extends ViewPart {
 		public BodyLayerStack(IDataProvider dataProvider) {
 			DataLayer bodyDataLayer = new DataLayer(dataProvider);
 
-			SummaryRowLayer summaryRowLayer = new SummaryRowLayer(bodyDataLayer, configRegistry, false);
-
-			ColumnReorderLayer columnReorderLayer = new ColumnReorderLayer(summaryRowLayer);
+			ColumnReorderLayer columnReorderLayer;
+			if (showSummaryRow) {
+				SummaryRowLayer summaryRowLayer = new SummaryRowLayer(bodyDataLayer, configRegistry, false);
+				columnReorderLayer = new ColumnReorderLayer(summaryRowLayer);
+			} else {
+				columnReorderLayer = new ColumnReorderLayer(bodyDataLayer);
+			}
 			ColumnHideShowLayer columnHideShowLayer = new ColumnHideShowLayer(columnReorderLayer);
 			selectionLayer = new SelectionLayer(columnHideShowLayer);
 
@@ -153,17 +202,12 @@ public class QueryResultNatTableView extends ViewPart {
 
 		public SummaryRowConfiguration(IDataProvider dataProvider) {
 			this.dataProvider = dataProvider;
-			//this.summaryRowBgColor = GUIHelper.COLOR_BLUE;
-			this.summaryRowBgColor = new Color(Display.getDefault(), 197,224,250);
+			this.summaryRowBgColor = new Color(Display.getDefault(), 85, 190, 90);
 			this.summaryRowFgColor = GUIHelper.COLOR_WHITE;
 		}
 
 		@Override
 		public void addSummaryProviderConfig(IConfigRegistry configRegistry) {
-			// Labels are applied to the summary row and cells by default to
-			// make configuration easier.
-			// See the Javadoc for the SummaryRowLayer
-
 			// Summary provider
 			SumProvider sumProvider = new SumProvider(this.dataProvider);
 			configRegistry.registerConfigAttribute(SummaryRowConfigAttributes.SUMMARY_PROVIDER, sumProvider, DisplayMode.NORMAL, SummaryRowLayer.DEFAULT_SUMMARY_ROW_CONFIG_LABEL);
