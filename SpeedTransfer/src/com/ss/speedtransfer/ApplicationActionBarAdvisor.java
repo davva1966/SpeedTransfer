@@ -1,13 +1,5 @@
 package com.ss.speedtransfer;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.eclipse.core.commands.Command;
-import org.eclipse.core.commands.ExecutionEvent;
-import org.eclipse.core.commands.ExecutionException;
-import org.eclipse.core.commands.IExecutionListener;
-import org.eclipse.core.commands.NotHandledException;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.GroupMarker;
 import org.eclipse.jface.action.IAction;
@@ -27,11 +19,9 @@ import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.actions.ActionFactory.IWorkbenchAction;
 import org.eclipse.ui.application.ActionBarAdvisor;
 import org.eclipse.ui.application.IActionBarConfigurer;
-import org.eclipse.ui.commands.ICommandService;
 import org.eclipse.ui.ide.IDE;
 
 import com.ss.speedtransfer.actions.SwitchWorkspaceAction;
-import com.ss.speedtransfer.handlers.ToggleLazyLoadHandler;
 import com.ss.speedtransfer.model.SQLScratchPadInput;
 import com.ss.speedtransfer.ui.editor.querydef.SQLScratchPadEditor;
 import com.ss.speedtransfer.util.DefaultDBManager;
@@ -41,8 +31,6 @@ import com.ss.speedtransfer.util.UIHelper;
 
 
 public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
-
-	Action toggleLazyLoad;
 
 	public ApplicationActionBarAdvisor(IActionBarConfigurer configurer) {
 		super(configurer);
@@ -120,42 +108,6 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 		action = ActionFactory.RESET_PERSPECTIVE.create(window);
 		action.setImageDescriptor(UIHelper.instance().getImageDescriptor("reset_perspective.gif"));
 		appToolBar.add(action);
-
-		ICommandService service = (ICommandService) PlatformUI.getWorkbench().getService(ICommandService.class);
-		final Command command = service.getCommand("com.ss.speedtransfer.toggleLazyLoadCommand");
-
-		appToolBar.add(new Separator());
-		toggleLazyLoad = new Action("Toggle Lazy Load", IAction.AS_CHECK_BOX) {
-			public void run() {
-				try {
-					Map<String, String> parms = new HashMap<String, String>();
-					command.executeWithChecks(new ExecutionEvent(command, parms, null, null));
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-
-			}
-		};
-
-		toggleLazyLoad.setChecked(ToggleLazyLoadHandler.isLazyLoading());
-		toggleLazyLoad.setImageDescriptor(UIHelper.instance().getImageDescriptor("lazyload.gif"));
-		service.addExecutionListener(new IExecutionListener() {
-			public void preExecute(String commandId, ExecutionEvent event) {
-			}
-
-			public void postExecuteSuccess(String commandId, Object returnValue) {
-				if (commandId.equals("com.ss.speedtransfer.toggleLazyLoadCommand"))
-					toggleLazyLoad.setChecked(ToggleLazyLoadHandler.isLazyLoading());
-			}
-
-			public void postExecuteFailure(String commandId, ExecutionException exception) {
-			}
-
-			public void notHandled(String commandId, NotHandledException exception) {
-			}
-		});
-
-		appToolBar.add(toggleLazyLoad);
 
 		appToolBar.add(new Separator());
 		Action openScratchPad = new Action("Open SQL Scratch Pad", IAction.AS_PUSH_BUTTON) {

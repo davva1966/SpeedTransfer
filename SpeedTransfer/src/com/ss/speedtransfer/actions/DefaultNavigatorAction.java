@@ -40,7 +40,7 @@ public class DefaultNavigatorAction extends OpenFileAction {
 
 	protected void runQuery(IFile file) {
 		try {
-			RunSQLToTableAction action = new RunSQLToTableAction(new QueryDefinition(file));
+			RunSQLAction action = new RunSQLAction(new QueryDefinition(file));
 			action.run();
 		} catch (Exception e) {
 			UIHelper.instance().showErrorMsg("Error", SSUtil.getMessage(e));

@@ -1,197 +1,220 @@
 package com.ss.speedtransfer.ui.view;
 
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.util.List;
-
-import org.eclipse.jface.viewers.CellEditor;
-import org.eclipse.jface.viewers.EditingSupport;
-import org.eclipse.jface.viewers.IElementComparer;
-import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.jface.viewers.TableViewerColumn;
-import org.eclipse.jface.viewers.TextCellEditor;
-import org.eclipse.swt.SWT;
+import org.eclipse.jface.layout.GridDataFactory;
+import org.eclipse.nebula.widgets.nattable.NatTable;
+import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
+import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
+import org.eclipse.nebula.widgets.nattable.config.DefaultNatTableStyleConfiguration;
+import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
+import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
+import org.eclipse.nebula.widgets.nattable.freeze.CompositeFreezeLayer;
+import org.eclipse.nebula.widgets.nattable.freeze.FreezeLayer;
+import org.eclipse.nebula.widgets.nattable.freeze.config.DefaultFreezeGridBindings;
+import org.eclipse.nebula.widgets.nattable.grid.data.DefaultCornerDataProvider;
+import org.eclipse.nebula.widgets.nattable.grid.data.DefaultSummaryRowHeaderDataProvider;
+import org.eclipse.nebula.widgets.nattable.grid.layer.ColumnHeaderLayer;
+import org.eclipse.nebula.widgets.nattable.grid.layer.CornerLayer;
+import org.eclipse.nebula.widgets.nattable.grid.layer.GridLayer;
+import org.eclipse.nebula.widgets.nattable.grid.layer.RowHeaderLayer;
+import org.eclipse.nebula.widgets.nattable.hideshow.ColumnHideShowLayer;
+import org.eclipse.nebula.widgets.nattable.layer.AbstractLayerTransform;
+import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
+import org.eclipse.nebula.widgets.nattable.reorder.ColumnReorderLayer;
+import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
+import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
+import org.eclipse.nebula.widgets.nattable.summaryrow.DefaultSummaryRowConfiguration;
+import org.eclipse.nebula.widgets.nattable.summaryrow.SummaryRowConfigAttributes;
+import org.eclipse.nebula.widgets.nattable.summaryrow.SummaryRowLayer;
+import org.eclipse.nebula.widgets.nattable.util.GCFactory;
+import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
+import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 import org.eclipse.swt.custom.BusyIndicator;
-import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Listener;
-import org.eclipse.swt.widgets.Table;
-import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.part.ViewPart;
 
 import com.ss.speedtransfer.model.QueryDefinition;
-import com.ss.speedtransfer.model.QueryResultColumnLabelProvider;
-import com.ss.speedtransfer.model.QueryResultLazyContentProvider;
+import com.ss.speedtransfer.ui.nattable.QueryDefinitionColumnHeadingDataProvider;
+import com.ss.speedtransfer.ui.nattable.QueryDefinitionDataProvider;
+import com.ss.speedtransfer.ui.nattable.QueryDefinitionResultTableMenuConfiguration;
+import com.ss.speedtransfer.ui.nattable.ResizeAllColumnsCommand;
+import com.ss.speedtransfer.ui.nattable.SumProvider;
 import com.ss.speedtransfer.util.UIHelper;
 
-
 public class QueryResultView extends ViewPart {
+
 	public static final String ID = "com.ss.speedtransfer.queryResultView";
+	protected QueryDefinition queryDefinition;
+	protected QueryDefinitionDataProvider dataProvider = new QueryDefinitionDataProvider();
 
-	private TableViewer viewer;
+	protected Composite parent;
+	protected boolean showSummaryRow = false;
 
-	protected class TextEditingSupport extends EditingSupport {
+	protected ConfigRegistry configRegistry;
+	protected BodyLayerStack bodyLayer;
+	protected NatTable natTable;
 
-		private final TableViewer viewer;
-		private final int idx;
-
-		public TextEditingSupport(TableViewer viewer, int idx) {
-			super(viewer);
-			this.viewer = viewer;
-			this.idx = idx;
-		}
-
-		@Override
-		protected CellEditor getCellEditor(Object element) {
-			return new TextCellEditor(viewer.getTable());
-		}
-
-		@Override
-		protected boolean canEdit(Object element) {
-			return true;
-		}
-
-		@Override
-		protected Object getValue(Object element) {
-			return ((List<String>) element).get(idx);
-		}
-
-		@Override
-		protected void setValue(Object element, Object value) {
-
-		}
+	public QueryResultView() {
 	}
 
+	public QueryDefinition getQueryDefinition() {
+		return queryDefinition;
+	}
+
+	public void setQueryDefinition(QueryDefinition queryDefinition) {
+		this.queryDefinition = queryDefinition;
+		setPartName(queryDefinition.getName());
+		setTitleToolTip(queryDefinition.getSQL());
+		dataProvider.setQueryDefinition(queryDefinition);
+		natTable.refresh();
+		natTable.setVisible(true);
+	}
+
+	@Override
 	public void createPartControl(Composite parent) {
-		GridLayout layout = new GridLayout(2, false);
-		parent.setLayout(layout);
-		createViewer(parent);
-	}
-
-	private void createViewer(Composite parent) {
-		viewer = new TableViewer(parent, SWT.VIRTUAL | SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL | SWT.FULL_SELECTION | SWT.BORDER);
-
-		final Table table = viewer.getTable();
-		table.setHeaderVisible(true);
-		table.setLinesVisible(true);
-		viewer.setContentProvider(new QueryResultLazyContentProvider(this));
-		viewer.setComparer(new IElementComparer() {
-
-			@Override
-			public int hashCode(Object element) {
-				return element.hashCode();
-			}
-
-			@Override
-			public boolean equals(Object a, Object b) {
-				try {
-					return ((List<String>) a).get(0).equals(((List<String>) b).get(0));
-				} catch (Exception e) {
-				}
-				return a.equals(b);
-			}
-		});
-
-		getSite().setSelectionProvider(viewer);
-
-		// Layout the viewer
-		GridData gridData = new GridData();
-		gridData.verticalAlignment = GridData.FILL;
-		gridData.horizontalSpan = 2;
-		gridData.grabExcessHorizontalSpace = true;
-		gridData.grabExcessVerticalSpace = true;
-		gridData.horizontalAlignment = GridData.FILL;
-		viewer.getControl().setLayoutData(gridData);
-		
-	}
-
-	public TableViewer getViewer() {
-		return viewer;
-	}
-
-	public void inputChanged(ResultSet result, List<String[]> columnProperties, QueryDefinition queryDef) {
-
-		setPartName(queryDef.getName());
-		setTitleToolTip(queryDef.getSQL());
-
-		TableColumn[] columns = viewer.getTable().getColumns();
-		for (TableColumn col : columns)
-			col.dispose();
-		createColumns(result, columnProperties);
-	}
-
-	// This will create the columns for the table
-	private void createColumns(ResultSet result, List<String[]> columnProperties) {
-
-		try {
-			ResultSetMetaData rsmd = result.getMetaData();
-
-			// Create row column
-			TableViewerColumn rowColumn = new TableViewerColumn(viewer, SWT.NONE);
-			TableColumn column = rowColumn.getColumn();
-			column.setText("Row");
-			column.setWidth(50);
-			rowColumn.setLabelProvider(new QueryResultColumnLabelProvider(0));
-
-			for (int i = 1; i <= rsmd.getColumnCount(); i++) {
-				TableViewerColumn col = createTableViewerColumn(columnProperties.get(i - 1));
-				col.setLabelProvider(new QueryResultColumnLabelProvider(i));
-				col.setEditingSupport(new TextEditingSupport(viewer, i));
-			}
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		this.parent = parent;
+		parent.setLayout(new GridLayout());
+		buildNatTable();
+		natTable.setVisible(false);
 
 	}
 
-	private TableViewerColumn createTableViewerColumn(String[] columnProperties) {
-		final TableViewerColumn viewerColumn = new TableViewerColumn(viewer, SWT.NONE);
-		final TableColumn column = viewerColumn.getColumn();
-		column.setText(columnProperties[4]);
-		int width = Integer.parseInt(columnProperties[5]);
-		if (width < 10)
-			width = width * 12;
-		else if (width < 20)
-			width = width * 8;
-		else
-			width = width * 6;
-		if (width > 200)
-			width = 200;
-		column.setWidth(width);
-		column.setAlignment(SWT.RIGHT);
-		if (columnProperties[6].equalsIgnoreCase("left"))
-			column.setAlignment(SWT.LEFT);
-		else if (columnProperties[6].equalsIgnoreCase("center"))
-			column.setAlignment(SWT.CENTER);
-		column.setResizable(true);
-		column.setMoveable(true);
-		column.addListener(SWT.DRAG, new Listener() {
-			public void handleEvent(Event e) {
-				System.out.println("Drag " + e.widget);
-			}
-		});
+	protected void buildNatTable() {
 
-		return viewerColumn;
+		if (natTable != null)
+			natTable.dispose();
 
+		configRegistry = new ConfigRegistry();
+
+		bodyLayer = new BodyLayerStack(dataProvider);
+
+		IDataProvider colHeaderDataProvider = new QueryDefinitionColumnHeadingDataProvider(dataProvider);
+		ColumnHeaderLayerStack columnHeaderLayer = new ColumnHeaderLayerStack(colHeaderDataProvider);
+
+		IDataProvider rowHeaderDataProvider = new DefaultSummaryRowHeaderDataProvider(dataProvider, "\u2211");
+		RowHeaderLayerStack rowHeaderLayer = new RowHeaderLayerStack(rowHeaderDataProvider);
+
+		DefaultCornerDataProvider cornerDataProvider = new DefaultCornerDataProvider(colHeaderDataProvider, rowHeaderDataProvider);
+		CornerLayer cornerLayer = new CornerLayer(new DataLayer(cornerDataProvider), rowHeaderLayer, columnHeaderLayer);
+
+		GridLayer gridLayer = new GridLayer(bodyLayer.getCompositeFreezeLayer(), columnHeaderLayer, rowHeaderLayer, cornerLayer);
+
+		natTable = new NatTable(parent, gridLayer, false);
+
+		// Configuration
+		if (showSummaryRow)
+			natTable.addConfiguration(new SummaryRowConfiguration(dataProvider));
+		natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
+		natTable.addConfiguration(new QueryDefinitionResultTableMenuConfiguration(natTable, bodyLayer.getSelectionLayer(), bodyLayer.getCompositeFreezeLayer()));
+		natTable.addConfiguration(new DefaultFreezeGridBindings());
+		natTable.setConfigRegistry(configRegistry);
+
+		natTable.configure();
+
+		GridDataFactory.fillDefaults().grab(true, true).applyTo(natTable);
+
+		parent.layout();
 	}
 
-	/**
-	 * Passing the focus request to the viewer's control.
-	 */
+	@Override
 	public void setFocus() {
-		viewer.getControl().setFocus();
+		// viewer.getControl().setFocus();
 	}
 
 	public void autoSizeColumns() {
 		BusyIndicator.showWhile(UIHelper.instance().getDisplay(), new Runnable() {
 			public void run() {
-				for (TableColumn tc : getViewer().getTable().getColumns())
-					tc.pack();
+				ILayerCommand command = new ResizeAllColumnsCommand(natTable, dataProvider.getColumnCount(), 1, configRegistry, new GCFactory(natTable));
+				natTable.doCommand(command);
 			}
 		});
+	}
+
+	public void toggleSummaryRow() {
+		BusyIndicator.showWhile(UIHelper.instance().getDisplay(), new Runnable() {
+			public void run() {
+				if (showSummaryRow) {
+					showSummaryRow = false;
+				} else {
+					showSummaryRow = true;
+				}
+				buildNatTable();
+				natTable.refresh();
+			}
+		});
+	}
+
+	public class BodyLayerStack extends AbstractLayerTransform {
+
+		private SelectionLayer selectionLayer;
+		private CompositeFreezeLayer compositeFreezeLayer;
+
+		public BodyLayerStack(IDataProvider dataProvider) {
+			DataLayer bodyDataLayer = new DataLayer(dataProvider);
+
+			ColumnReorderLayer columnReorderLayer;
+			if (showSummaryRow) {
+				SummaryRowLayer summaryRowLayer = new SummaryRowLayer(bodyDataLayer, configRegistry, false);
+				columnReorderLayer = new ColumnReorderLayer(summaryRowLayer);
+			} else {
+				columnReorderLayer = new ColumnReorderLayer(bodyDataLayer);
+			}
+			ColumnHideShowLayer columnHideShowLayer = new ColumnHideShowLayer(columnReorderLayer);
+			selectionLayer = new SelectionLayer(columnHideShowLayer);
+
+			ViewportLayer viewportLayer = new ViewportLayer(selectionLayer);
+			FreezeLayer freezeLayer = new FreezeLayer(selectionLayer);
+			compositeFreezeLayer = new CompositeFreezeLayer(freezeLayer, viewportLayer, selectionLayer);
+
+			setUnderlyingLayer(compositeFreezeLayer);
+		}
+
+		public SelectionLayer getSelectionLayer() {
+			return selectionLayer;
+		}
+
+		public CompositeFreezeLayer getCompositeFreezeLayer() {
+			return compositeFreezeLayer;
+		}
+	}
+
+	public class ColumnHeaderLayerStack extends AbstractLayerTransform {
+
+		public ColumnHeaderLayerStack(IDataProvider dataProvider) {
+			DataLayer dataLayer = new DataLayer(dataProvider);
+			ColumnHeaderLayer colHeaderLayer = new ColumnHeaderLayer(dataLayer, bodyLayer.getCompositeFreezeLayer(), bodyLayer.getSelectionLayer());
+			setUnderlyingLayer(colHeaderLayer);
+		}
+	}
+
+	public class RowHeaderLayerStack extends AbstractLayerTransform {
+
+		public RowHeaderLayerStack(IDataProvider dataProvider) {
+			DataLayer dataLayer = new DataLayer(dataProvider, 50, 20);
+			RowHeaderLayer rowHeaderLayer = new RowHeaderLayer(dataLayer, bodyLayer.getCompositeFreezeLayer(), bodyLayer.getSelectionLayer());
+			setUnderlyingLayer(rowHeaderLayer);
+		}
+	}
+
+	class SummaryRowConfiguration extends DefaultSummaryRowConfiguration {
+
+		private final IDataProvider dataProvider;
+
+		public SummaryRowConfiguration(IDataProvider dataProvider) {
+			this.dataProvider = dataProvider;
+			this.summaryRowBgColor = new Color(Display.getDefault(), 85, 190, 90);
+			this.summaryRowFgColor = GUIHelper.COLOR_WHITE;
+		}
+
+		@Override
+		public void addSummaryProviderConfig(IConfigRegistry configRegistry) {
+			// Summary provider
+			SumProvider sumProvider = new SumProvider(this.dataProvider);
+			configRegistry.registerConfigAttribute(SummaryRowConfigAttributes.SUMMARY_PROVIDER, sumProvider, DisplayMode.NORMAL, SummaryRowLayer.DEFAULT_SUMMARY_ROW_CONFIG_LABEL);
+
+		}
 	}
 
 }

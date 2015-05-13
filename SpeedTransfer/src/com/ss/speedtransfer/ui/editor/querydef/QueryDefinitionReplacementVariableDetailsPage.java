@@ -56,7 +56,7 @@ import org.w3c.dom.Node;
 import com.ss.speedtransfer.SpeedTransferPlugin;
 import com.ss.speedtransfer.actions.FormatSQLAction;
 import com.ss.speedtransfer.actions.OpenSQLBuilderWizardAction;
-import com.ss.speedtransfer.actions.RunSQLToTableAction;
+import com.ss.speedtransfer.actions.RunSQLAction;
 import com.ss.speedtransfer.handlers.TextOperationHandler;
 import com.ss.speedtransfer.model.QueryDefinition;
 import com.ss.speedtransfer.ui.StyledEdit;
@@ -64,7 +64,6 @@ import com.ss.speedtransfer.util.ItemSelectionDialog;
 import com.ss.speedtransfer.util.UIHelper;
 import com.ss.speedtransfer.util.sql.SQLConfiguration;
 import com.ss.speedtransfer.xml.editor.XMLModelListener;
-
 
 public class QueryDefinitionReplacementVariableDetailsPage extends AbstractQueryDefinitionDetailsPage {
 
@@ -532,7 +531,7 @@ public class QueryDefinitionReplacementVariableDetailsPage extends AbstractQuery
 	protected void createActions() {
 		actionFormatSQL = new FormatSQLAction(sqlEdit);
 		actionOpenSQLBuilderWizard = new OpenSQLBuilderWizardAction(sqlEdit, getQueryDef());
-		runSQLAction = new RunSQLToTableAction(getQueryDef(), sqlEdit);
+		runSQLAction = new RunSQLAction(getQueryDef(), sqlEdit);
 
 		// Text operations
 		undoAction = new TextOperationHandler(sqlEdit, ITextOperationTarget.UNDO, "Undo");
@@ -540,9 +539,9 @@ public class QueryDefinitionReplacementVariableDetailsPage extends AbstractQuery
 		copyAction = new TextOperationHandler(sqlEdit, ITextOperationTarget.COPY, "Copy");
 		pasteAction = new TextOperationHandler(sqlEdit, ITextOperationTarget.PASTE, "Paste");
 		deleteAction = new TextOperationHandler(sqlEdit, ITextOperationTarget.DELETE, "Delete");
-		
-		TextViewerUndoManager undoManager = (TextViewerUndoManager)sqlEdit.getUndoManager();
-		
+
+		TextViewerUndoManager undoManager = (TextViewerUndoManager) sqlEdit.getUndoManager();
+
 		IAction undo = ActionFactory.UNDO.create(UIHelper.instance().getActiveWindow());
 		block.getEditor().getEditorSite().getActionBars().setGlobalActionHandler(undo.getId(), new UndoActionHandler(block.getEditor().getEditorSite(), undoManager.getUndoContext()));
 		block.getEditor().getEditorSite().getActionBars().updateActionBars();
@@ -759,8 +758,7 @@ public class QueryDefinitionReplacementVariableDetailsPage extends AbstractQuery
 
 		clearMessage("Exclude info", excludeIfEmptyButton);
 		if (excludeIfEmptyButton.isEnabled() && excludeIfEmptyButton.getSelection())
-			issueMessage("Exclude info", IMessageProvider.INFORMATION, "If variable is used to filter data, selections that are using this variable will be removed from the sql string at runtime",
-					excludeIfEmptyButton);
+			issueMessage("Exclude info", IMessageProvider.INFORMATION, "If variable is used to filter data, selections that are using this variable will be removed from the sql string at runtime", excludeIfEmptyButton);
 
 		if (typeCombo.getText().equalsIgnoreCase(QueryDefinition.VALUE_LIST)) {
 			clearMessage("Invalid Selection SQL", sqlEdit.getControl());

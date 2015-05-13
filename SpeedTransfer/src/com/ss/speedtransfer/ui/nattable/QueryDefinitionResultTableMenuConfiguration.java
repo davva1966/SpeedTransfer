@@ -3,6 +3,7 @@ package com.ss.speedtransfer.ui.nattable;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.AbstractUiBindingConfiguration;
 import org.eclipse.nebula.widgets.nattable.copy.command.CopyDataToClipboardCommand;
+import org.eclipse.nebula.widgets.nattable.freeze.CompositeFreezeLayer;
 import org.eclipse.nebula.widgets.nattable.freeze.command.FreezeColumnCommand;
 import org.eclipse.nebula.widgets.nattable.freeze.command.FreezeRowCommand;
 import org.eclipse.nebula.widgets.nattable.freeze.command.UnFreezeGridCommand;
@@ -29,15 +30,17 @@ public class QueryDefinitionResultTableMenuConfiguration extends AbstractUiBindi
 	public static final String UNFREEZE_ALL_MENU_ITEM_ID = "unfreezeAllMenuItem"; //$NON-NLS-1$
 
 	protected SelectionLayer selectionLayer;
+	protected CompositeFreezeLayer freezeLayer;
 
 	protected Menu colHeaderMenu;
 	protected Menu rowHeaderMenu;
 	protected Menu cornerMenu;
 	protected Menu bodyMenu;
 
-	public QueryDefinitionResultTableMenuConfiguration(NatTable natTable, SelectionLayer selectionLayer) {
+	public QueryDefinitionResultTableMenuConfiguration(NatTable natTable, SelectionLayer selectionLayer, CompositeFreezeLayer freezeLayer) {
 		super();
 		this.selectionLayer = selectionLayer;
+		this.freezeLayer = freezeLayer;
 		this.colHeaderMenu = createColumnHeaderMenu(natTable).build();
 		this.rowHeaderMenu = createRowHeaderMenu(natTable).build();
 		this.cornerMenu = createCornerMenu(natTable).build();
@@ -48,7 +51,8 @@ public class QueryDefinitionResultTableMenuConfiguration extends AbstractUiBindi
 		PopupMenuBuilder builder = new PopupMenuBuilder(natTable).withHideColumnMenuItem().withShowAllColumnsMenuItem().withAutoResizeSelectedColumnsMenuItem().withColumnRenameDialog();
 		builder.withSeparator();
 		builder.withMenuItemProvider(FREEZE_COLUMN_MENU_ITEM_ID, freezeColumnMenuItemProvider("Freeze Column"));
-		builder.withMenuItemProvider(UNFREEZE_ALL_MENU_ITEM_ID, unfreezeAllMenuItemProvider("Unfreeze"));
+		builder.withMenuItemProvider(UNFREEZE_ALL_MENU_ITEM_ID, unfreezeAllMenuItemProvider("Unfreeze Columns/Rows"));
+		builder.withVisibleState(UNFREEZE_ALL_MENU_ITEM_ID, new IsFrozen(freezeLayer));
 		return builder;
 	}
 
@@ -56,14 +60,16 @@ public class QueryDefinitionResultTableMenuConfiguration extends AbstractUiBindi
 		PopupMenuBuilder builder = new PopupMenuBuilder(natTable).withAutoResizeSelectedRowsMenuItem();
 		builder.withSeparator();
 		builder.withMenuItemProvider(FREEZE_ROW_MENU_ITEM_ID, freezeRowMenuItemProvider("Freeze Row"));
-		builder.withMenuItemProvider(UNFREEZE_ALL_MENU_ITEM_ID, unfreezeAllMenuItemProvider("Unfreeze"));
+		builder.withMenuItemProvider(UNFREEZE_ALL_MENU_ITEM_ID, unfreezeAllMenuItemProvider("Unfreeze Columns/Rows"));
+		builder.withVisibleState(UNFREEZE_ALL_MENU_ITEM_ID, new IsFrozen(freezeLayer));
 		return builder;
 	}
 
 	protected PopupMenuBuilder createCornerMenu(NatTable natTable) {
 		PopupMenuBuilder builder = new PopupMenuBuilder(natTable).withShowAllColumnsMenuItem();
 		builder.withSeparator();
-		builder.withMenuItemProvider(UNFREEZE_ALL_MENU_ITEM_ID, unfreezeAllMenuItemProvider("Unfreeze"));
+		builder.withMenuItemProvider(UNFREEZE_ALL_MENU_ITEM_ID, unfreezeAllMenuItemProvider("Unfreeze Columns/Rows"));
+		builder.withVisibleState(UNFREEZE_ALL_MENU_ITEM_ID, new IsFrozen(freezeLayer));
 		return builder;
 	}
 

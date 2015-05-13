@@ -35,13 +35,9 @@ import com.ss.speedtransfer.actions.ExportToDBAction;
 import com.ss.speedtransfer.actions.ExportToExcelAction;
 import com.ss.speedtransfer.actions.ExportToPDFAction;
 import com.ss.speedtransfer.actions.RunSQLAction;
-import com.ss.speedtransfer.actions.RunSQLToExcelAction;
-import com.ss.speedtransfer.actions.RunSQLToNatTableAction;
-import com.ss.speedtransfer.actions.RunSQLToTableAction;
 import com.ss.speedtransfer.model.QueryDefinition;
 import com.ss.speedtransfer.ui.ActionDropDownMenuCreator;
 import com.ss.speedtransfer.util.LicenseManager;
-import com.ss.speedtransfer.util.SSUtil;
 import com.ss.speedtransfer.util.UIHelper;
 import com.ss.speedtransfer.xml.editor.XMLFormEditor;
 import com.ss.speedtransfer.xml.editor.XMLFormPageBlock;
@@ -231,19 +227,8 @@ public class QueryDefinitionFormPageBlock extends XMLFormPageBlock {
 
 	protected void createToolBarActions(IManagedForm managedForm) {
 
-		IAction actionRunSQLToTable = new RunSQLToTableAction(getQueryDef());
-		actionRunSQLToTable.setText("Run Query To Table");
-		IAction actionRunSQLToExcel = new RunSQLToExcelAction(getQueryDef());
-		actionRunSQLToExcel.setText("Run Query To Excel");
-		IAction actionRunSQLToNatTable = new RunSQLToNatTableAction(getQueryDef());
-		actionRunSQLToNatTable.setText("Run Query To Nat Table");
-
-		List<IAction> runActions = new ArrayList<IAction>();
-		runActions.add(actionRunSQLToTable);
-		if (SSUtil.excelInstalled())
-			runActions.add(actionRunSQLToExcel);
-
-		actionRunSQL = new RunSQLAction(runActions, getQueryDef());
+		actionRunSQL = new RunSQLAction(getQueryDef());
+		actionRunSQL.setText("Run Query");
 
 		IAction actionExportToExcel = new ExportToExcelAction(getQueryDef());
 		IAction actionExportToPDF = new ExportToPDFAction(getQueryDef());
@@ -266,11 +251,9 @@ public class QueryDefinitionFormPageBlock extends XMLFormPageBlock {
 		ScrolledForm form = managedForm.getForm();
 		form.getToolBarManager().add(actionRunSQL);
 		form.getToolBarManager().add(new Separator());
-		form.getToolBarManager().add(actionRunSQLToNatTable);
-		form.getToolBarManager().add(new Separator());
 		form.getToolBarManager().add(actionExport);
 		form.getToolBarManager().add(new Separator());
-
+		
 		super.createToolBarActions(managedForm);
 
 	}

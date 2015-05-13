@@ -77,7 +77,6 @@ import com.ss.speedtransfer.model.SQLScratchPad;
 import com.ss.speedtransfer.model.SQLScratchPadInput;
 import com.ss.speedtransfer.ui.StyledEdit;
 import com.ss.speedtransfer.ui.editor.dbcon.DBConnectionFileSelectionDialog;
-import com.ss.speedtransfer.ui.view.QueryExcelResultView;
 import com.ss.speedtransfer.ui.view.QueryResultView;
 import com.ss.speedtransfer.util.DBConnectionResourceListener;
 import com.ss.speedtransfer.util.SSUtil;
@@ -85,7 +84,6 @@ import com.ss.speedtransfer.util.UIHelper;
 import com.ss.speedtransfer.util.sql.SQLConfiguration;
 import com.ss.speedtransfer.xml.editor.NewXMLFileGenerator;
 import com.ss.speedtransfer.xml.editor.XMLModelListener;
-
 
 public class SQLScratchPadEditor extends EditorPart implements XMLModelListener {
 	public static final String ID = "com.ss.speedtransfer.sqlScratchPadEditor";
@@ -182,12 +180,12 @@ public class SQLScratchPadEditor extends EditorPart implements XMLModelListener 
 	public boolean isDirty() {
 		return isDirty;
 	}
-	
+
 	@Override
 	public boolean isSaveOnCloseNeeded() {
-        // return isDirty();
+		// return isDirty();
 		return false;
-    }
+	}
 
 	@Override
 	public void createPartControl(Composite parent) {
@@ -314,17 +312,8 @@ public class SQLScratchPadEditor extends EditorPart implements XMLModelListener 
 		actionFormatSQL = new FormatSQLAction(sqlEdit);
 		actionOpenSQLBuilderWizard = new OpenSQLBuilderWizardAction(sqlEdit, scratchPad);
 
-		IAction actionRunSQLToTable = new RunSQLAction(scratchPad, "table");
-		actionRunSQLToTable.setText("Run Query To Table");
-		IAction actionRunSQLToExcel = new RunSQLAction(scratchPad, "excel");
-		actionRunSQLToExcel.setText("Run Query To Excel");
-
-		List<IAction> runActions = new ArrayList<IAction>();
-		runActions.add(actionRunSQLToTable);
-		if (SSUtil.excelInstalled())
-			runActions.add(actionRunSQLToExcel);
-
-		actionRunSQL = new RunSQLAction(runActions, scratchPad);
+		actionRunSQL = new RunSQLAction(scratchPad);
+		actionRunSQL.setText("Run Query");
 
 		IAction actionExportToExcel = new ExportToExcelAction(scratchPad);
 		IAction actionExportToPDF = new ExportToPDFAction(scratchPad);
@@ -438,13 +427,8 @@ public class SQLScratchPadEditor extends EditorPart implements XMLModelListener 
 
 		try {
 			IViewReference viewRef = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().findViewReference(QueryResultView.ID, id);
-			if (viewRef != null) {
+			if (viewRef != null)
 				PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().showView(QueryResultView.ID, id, IWorkbenchPage.VIEW_VISIBLE);
-			} else {
-				viewRef = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().findViewReference(QueryExcelResultView.ID, id);
-				if (viewRef != null)
-					PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().showView(QueryExcelResultView.ID, id, IWorkbenchPage.VIEW_VISIBLE);
-			}
 		} catch (Exception e) {
 		}
 
