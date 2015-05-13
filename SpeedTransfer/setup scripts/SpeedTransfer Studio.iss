@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "SpeedTransfer Studio (64bit Beta)"
-#define MyAppVersion "Beta 6.02"
+#define MyAppVersion "Beta 6.03"
 #define MyAppExeName "SpeedTransfer.exe"
 
 [Setup]
