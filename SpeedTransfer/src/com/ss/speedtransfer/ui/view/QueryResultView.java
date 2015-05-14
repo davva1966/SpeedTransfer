@@ -36,10 +36,11 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.part.ViewPart;
 
 import com.ss.speedtransfer.model.QueryDefinition;
-import com.ss.speedtransfer.ui.nattable.QueryDefinitionColumnHeadingDataProvider;
+import com.ss.speedtransfer.ui.nattable.ExcelColumnHeadingDataProvider;
 import com.ss.speedtransfer.ui.nattable.QueryDefinitionDataProvider;
 import com.ss.speedtransfer.ui.nattable.QueryDefinitionResultTableMenuConfiguration;
 import com.ss.speedtransfer.ui.nattable.ResizeAllColumnsCommand;
+import com.ss.speedtransfer.ui.nattable.SelectionStyleConfiguration;
 import com.ss.speedtransfer.ui.nattable.SumProvider;
 import com.ss.speedtransfer.util.UIHelper;
 
@@ -86,11 +87,9 @@ public class QueryResultView extends ViewPart {
 		if (natTable != null)
 			natTable.dispose();
 
-		configRegistry = new ConfigRegistry();
-
 		bodyLayer = new BodyLayerStack(dataProvider);
 
-		IDataProvider colHeaderDataProvider = new QueryDefinitionColumnHeadingDataProvider(dataProvider);
+		IDataProvider colHeaderDataProvider = new ExcelColumnHeadingDataProvider(dataProvider);
 		ColumnHeaderLayerStack columnHeaderLayer = new ColumnHeaderLayerStack(colHeaderDataProvider);
 
 		IDataProvider rowHeaderDataProvider = new DefaultSummaryRowHeaderDataProvider(dataProvider, "\u2211");
@@ -103,12 +102,16 @@ public class QueryResultView extends ViewPart {
 
 		natTable = new NatTable(parent, gridLayer, false);
 
+		configRegistry = new ConfigRegistry();
+		
 		// Configuration
 		if (showSummaryRow)
 			natTable.addConfiguration(new SummaryRowConfiguration(dataProvider));
 		natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
 		natTable.addConfiguration(new QueryDefinitionResultTableMenuConfiguration(natTable, bodyLayer.getSelectionLayer(), bodyLayer.getCompositeFreezeLayer()));
 		natTable.addConfiguration(new DefaultFreezeGridBindings());
+		natTable.addConfiguration(new SelectionStyleConfiguration());
+		
 		natTable.setConfigRegistry(configRegistry);
 
 		natTable.configure();

@@ -118,16 +118,20 @@ public class QueryDefinitionDataProvider implements IDataProvider {
 								try {
 									resultSet = stmt.executeQuery(getQueryDefinition().getSQL().trim());
 									if (monitor.isCanceled() == false) {
+										int columnCount = resultSet.getMetaData().getColumnCount();										
 										columnProperties = SQLHelper.getColumnProperties(connection, resultSet, getQueryDefinition().getColumnHeading(), monitor);
+										String[] row = new String[columnCount];
+										for (int i = 0; i < row.length; i++) {
+											row[i] = columnProperties.get(i)[4];
+										}
+										data.add(row);
 										
 										int totalRows = SQLHelper.getSQLRowCount(getQueryDefinition().getSQL().trim(), connection);
 										SubMonitor progress = SubMonitor.convert(monitor);
-										progress.beginTask("Retrieving data...", totalRows);
+										progress.beginTask("Retrieving " + totalRows + " rows of data...", totalRows);
 
-										
-										int columnCount = resultSet.getMetaData().getColumnCount();
 										while (monitor.isCanceled() == false && resultSet.next()) {
-											String[] row = new String[columnCount];
+											row = new String[columnCount];
 											for (int i = 0; i < row.length; i++) {
 												row[i] = resultSet.getString(i + 1);
 											}
