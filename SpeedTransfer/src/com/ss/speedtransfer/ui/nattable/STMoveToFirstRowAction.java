@@ -9,8 +9,8 @@ import org.eclipse.swt.events.KeyEvent;
 
 public class STMoveToFirstRowAction extends AbstractKeySelectAction {
 
-	public STMoveToFirstRowAction() {
-		super(MoveDirectionEnum.UP);
+	public STMoveToFirstRowAction(boolean shiftMask, boolean ctrlMask) {
+		super(MoveDirectionEnum.UP, shiftMask, ctrlMask);
 	}
 
 	@Override

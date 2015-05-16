@@ -9,15 +9,14 @@ import org.eclipse.swt.events.KeyEvent;
 
 public class STMoveToLastRowAction extends AbstractKeySelectAction {
 
-    public STMoveToLastRowAction() {
-        super(MoveDirectionEnum.DOWN);
-    }
+	public STMoveToLastRowAction(boolean shiftMask, boolean ctrlMask) {
+		super(MoveDirectionEnum.DOWN, shiftMask, ctrlMask);
+	}
 
-    @Override
-    public void run(NatTable natTable, KeyEvent event) {
-        super.run(natTable, event);
-        natTable.doCommand(new MoveSelectionCommand(MoveDirectionEnum.DOWN,
-                SelectionLayer.MOVE_ALL, isShiftMask(), isControlMask()));
-    }
+	@Override
+	public void run(NatTable natTable, KeyEvent event) {
+		super.run(natTable, event);
+		natTable.doCommand(new MoveSelectionCommand(MoveDirectionEnum.DOWN, SelectionLayer.MOVE_ALL, isShiftMask(), isControlMask()));
+	}
 
 }

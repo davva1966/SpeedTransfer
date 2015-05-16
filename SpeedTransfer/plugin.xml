@@ -403,6 +403,11 @@
                  style="pulldown">
            </command>
            <command
+                 commandId="com.ss.speedtransfer.rowsToRetrieveCommand"
+                 id="com.ss.speedtransfer.rowsToRetrieveCommandPulldown"
+                 style="pulldown">
+           </command>
+           <command
                  commandId="com.ss.speedtransfer.creteExecutableCommand"
                  style="push">
            </command>
@@ -436,6 +441,29 @@
            <command
                  commandId="com.ss.speedtransfer.exportToDBCommand"
                  label="Export To Database"
+                 style="push">
+           </command>
+        </menuContribution>
+        <menuContribution
+              locationURI="menu:com.ss.speedtransfer.rowsToRetrieveCommandPulldown">
+           <command
+                 commandId="com.ss.speedtransfer.retrieve500Command"
+                 label="500"
+                 style="push">
+           </command>
+           <command
+                 commandId="com.ss.speedtransfer.retrieve1000Command"
+                 label="1000"
+                 style="push">
+           </command>
+           <command
+                 commandId="com.ss.speedtransfer.retrieve10000Command"
+                 label="1000"
+                 style="push">
+           </command>
+           <command
+                 commandId="com.ss.speedtransfer.retrieveAllCommand"
+                 label="1000"
                  style="push">
            </command>
         </menuContribution>

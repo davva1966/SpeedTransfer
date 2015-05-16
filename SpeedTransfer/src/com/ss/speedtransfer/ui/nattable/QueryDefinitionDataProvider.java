@@ -16,6 +16,7 @@ import org.eclipse.ui.progress.IProgressService;
 
 import com.ss.speedtransfer.model.QueryDefinition;
 import com.ss.speedtransfer.util.ConnectionManager;
+import com.ss.speedtransfer.util.MemoryWatcher;
 import com.ss.speedtransfer.util.SQLHelper;
 import com.ss.speedtransfer.util.SSUtil;
 import com.ss.speedtransfer.util.UIHelper;
@@ -30,6 +31,8 @@ public class QueryDefinitionDataProvider implements IDataProvider {
 	protected String sqlExecutionError = null;
 
 	protected QueryDefinition queryDefinition;
+
+	protected MemoryWatcher memoryWatcher = new MemoryWatcher();
 
 	public QueryDefinition getQueryDefinition() {
 		return queryDefinition;
@@ -85,6 +88,10 @@ public class QueryDefinitionDataProvider implements IDataProvider {
 		return data.size();
 	}
 
+	public List<String[]> getColumnProperties() {
+		return columnProperties;
+	}
+
 	public String[] getColumnProperties(int columnIndex) {
 		if (columnProperties == null)
 			return null;
@@ -118,18 +125,19 @@ public class QueryDefinitionDataProvider implements IDataProvider {
 								try {
 									resultSet = stmt.executeQuery(getQueryDefinition().getSQL().trim());
 									if (monitor.isCanceled() == false) {
-										int columnCount = resultSet.getMetaData().getColumnCount();										
+										int columnCount = resultSet.getMetaData().getColumnCount();
 										columnProperties = SQLHelper.getColumnProperties(connection, resultSet, getQueryDefinition().getColumnHeading(), monitor);
 										String[] row = new String[columnCount];
 										for (int i = 0; i < row.length; i++) {
 											row[i] = columnProperties.get(i)[4];
 										}
 										data.add(row);
-										
+
 										int totalRows = SQLHelper.getSQLRowCount(getQueryDefinition().getSQL().trim(), connection);
 										SubMonitor progress = SubMonitor.convert(monitor);
 										progress.beginTask("Retrieving " + totalRows + " rows of data...", totalRows);
 
+										int tempCount = 0;
 										while (monitor.isCanceled() == false && resultSet.next()) {
 											row = new String[columnCount];
 											for (int i = 0; i < row.length; i++) {
@@ -137,6 +145,16 @@ public class QueryDefinitionDataProvider implements IDataProvider {
 											}
 											data.add(row);
 											progress.worked(1);
+
+											tempCount++;
+											if (tempCount > 1000) {
+												if (memoryWatcher.runMemoryCheck() == false) {
+													monitor.setCanceled(true);
+													cancelled = true;
+													break;
+												}
+												tempCount = 0;
+											}
 										}
 									}
 
@@ -144,6 +162,10 @@ public class QueryDefinitionDataProvider implements IDataProvider {
 										cancelled = true;
 								} catch (Exception e) {
 									sqlExecutionError = SSUtil.getMessage(e);
+								} catch (OutOfMemoryError e) {
+									Runtime.getRuntime().gc();
+									monitor.setCanceled(true);
+									PlatformUI.getWorkbench().close();
 								} finally {
 									try {
 										if (resultSet != null)

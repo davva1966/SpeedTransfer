@@ -5,13 +5,12 @@ import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
 import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.DefaultNatTableStyleConfiguration;
-import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
+import org.eclipse.nebula.widgets.nattable.copy.command.CopyDataCommandHandler;
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
 import org.eclipse.nebula.widgets.nattable.freeze.CompositeFreezeLayer;
 import org.eclipse.nebula.widgets.nattable.freeze.FreezeLayer;
 import org.eclipse.nebula.widgets.nattable.freeze.config.DefaultFreezeGridBindings;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultCornerDataProvider;
-import org.eclipse.nebula.widgets.nattable.grid.data.DefaultSummaryRowHeaderDataProvider;
 import org.eclipse.nebula.widgets.nattable.grid.layer.ColumnHeaderLayer;
 import org.eclipse.nebula.widgets.nattable.grid.layer.CornerLayer;
 import org.eclipse.nebula.widgets.nattable.grid.layer.GridLayer;
@@ -21,18 +20,12 @@ import org.eclipse.nebula.widgets.nattable.layer.AbstractLayerTransform;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.reorder.ColumnReorderLayer;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
-import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
-import org.eclipse.nebula.widgets.nattable.summaryrow.DefaultSummaryRowConfiguration;
-import org.eclipse.nebula.widgets.nattable.summaryrow.SummaryRowConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.summaryrow.SummaryRowLayer;
 import org.eclipse.nebula.widgets.nattable.util.GCFactory;
-import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 import org.eclipse.swt.custom.BusyIndicator;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.part.ViewPart;
 
 import com.ss.speedtransfer.model.QueryDefinition;
@@ -40,8 +33,11 @@ import com.ss.speedtransfer.ui.nattable.ExcelColumnHeadingDataProvider;
 import com.ss.speedtransfer.ui.nattable.QueryDefinitionDataProvider;
 import com.ss.speedtransfer.ui.nattable.QueryDefinitionResultTableMenuConfiguration;
 import com.ss.speedtransfer.ui.nattable.ResizeAllColumnsCommand;
-import com.ss.speedtransfer.ui.nattable.SelectionStyleConfiguration;
-import com.ss.speedtransfer.ui.nattable.SumProvider;
+import com.ss.speedtransfer.ui.nattable.STDataLabelAccumulator;
+import com.ss.speedtransfer.ui.nattable.STNatTableStyleConfiguration;
+import com.ss.speedtransfer.ui.nattable.STSelectionLayerConfig;
+import com.ss.speedtransfer.ui.nattable.STSummaryRowConfiguration;
+import com.ss.speedtransfer.ui.nattable.STSummaryRowHeaderDataProvider;
 import com.ss.speedtransfer.util.UIHelper;
 
 public class QueryResultView extends ViewPart {
@@ -87,12 +83,14 @@ public class QueryResultView extends ViewPart {
 		if (natTable != null)
 			natTable.dispose();
 
+		configRegistry = new ConfigRegistry();
+		
 		bodyLayer = new BodyLayerStack(dataProvider);
 
 		IDataProvider colHeaderDataProvider = new ExcelColumnHeadingDataProvider(dataProvider);
 		ColumnHeaderLayerStack columnHeaderLayer = new ColumnHeaderLayerStack(colHeaderDataProvider);
 
-		IDataProvider rowHeaderDataProvider = new DefaultSummaryRowHeaderDataProvider(dataProvider, "\u2211");
+		IDataProvider rowHeaderDataProvider = new STSummaryRowHeaderDataProvider(dataProvider);
 		RowHeaderLayerStack rowHeaderLayer = new RowHeaderLayerStack(rowHeaderDataProvider);
 
 		DefaultCornerDataProvider cornerDataProvider = new DefaultCornerDataProvider(colHeaderDataProvider, rowHeaderDataProvider);
@@ -102,16 +100,12 @@ public class QueryResultView extends ViewPart {
 
 		natTable = new NatTable(parent, gridLayer, false);
 
-		configRegistry = new ConfigRegistry();
-		
 		// Configuration
-		if (showSummaryRow)
-			natTable.addConfiguration(new SummaryRowConfiguration(dataProvider));
 		natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
+		natTable.addConfiguration(new STNatTableStyleConfiguration());
 		natTable.addConfiguration(new QueryDefinitionResultTableMenuConfiguration(natTable, bodyLayer.getSelectionLayer(), bodyLayer.getCompositeFreezeLayer()));
 		natTable.addConfiguration(new DefaultFreezeGridBindings());
-		natTable.addConfiguration(new SelectionStyleConfiguration());
-		
+
 		natTable.setConfigRegistry(configRegistry);
 
 		natTable.configure();
@@ -154,19 +148,28 @@ public class QueryResultView extends ViewPart {
 		private SelectionLayer selectionLayer;
 		private CompositeFreezeLayer compositeFreezeLayer;
 
-		public BodyLayerStack(IDataProvider dataProvider) {
+		public BodyLayerStack(QueryDefinitionDataProvider dataProvider) {
 			DataLayer bodyDataLayer = new DataLayer(dataProvider);
+			bodyDataLayer.setConfigLabelAccumulator(new STDataLabelAccumulator(dataProvider));
 
 			ColumnReorderLayer columnReorderLayer;
 			if (showSummaryRow) {
 				SummaryRowLayer summaryRowLayer = new SummaryRowLayer(bodyDataLayer, configRegistry, false);
+				summaryRowLayer.addConfiguration(new STSummaryRowConfiguration(dataProvider));
 				columnReorderLayer = new ColumnReorderLayer(summaryRowLayer);
 			} else {
 				columnReorderLayer = new ColumnReorderLayer(bodyDataLayer);
 			}
 			ColumnHideShowLayer columnHideShowLayer = new ColumnHideShowLayer(columnReorderLayer);
-			selectionLayer = new SelectionLayer(columnHideShowLayer);
 
+			selectionLayer = new SelectionLayer(columnHideShowLayer, false);
+			selectionLayer.addConfiguration(new STSelectionLayerConfig());
+			
+			// Add handler to copy formatted data
+			CopyDataCommandHandler copyDataCommandHandler = new CopyDataCommandHandler(selectionLayer);
+			copyDataCommandHandler.setCopyFormattedText(true);
+			selectionLayer.registerCommandHandler(copyDataCommandHandler);
+					
 			ViewportLayer viewportLayer = new ViewportLayer(selectionLayer);
 			FreezeLayer freezeLayer = new FreezeLayer(selectionLayer);
 			compositeFreezeLayer = new CompositeFreezeLayer(freezeLayer, viewportLayer, selectionLayer);
@@ -198,25 +201,6 @@ public class QueryResultView extends ViewPart {
 			DataLayer dataLayer = new DataLayer(dataProvider, 50, 20);
 			RowHeaderLayer rowHeaderLayer = new RowHeaderLayer(dataLayer, bodyLayer.getCompositeFreezeLayer(), bodyLayer.getSelectionLayer());
 			setUnderlyingLayer(rowHeaderLayer);
-		}
-	}
-
-	class SummaryRowConfiguration extends DefaultSummaryRowConfiguration {
-
-		private final IDataProvider dataProvider;
-
-		public SummaryRowConfiguration(IDataProvider dataProvider) {
-			this.dataProvider = dataProvider;
-			this.summaryRowBgColor = new Color(Display.getDefault(), 85, 190, 90);
-			this.summaryRowFgColor = GUIHelper.COLOR_WHITE;
-		}
-
-		@Override
-		public void addSummaryProviderConfig(IConfigRegistry configRegistry) {
-			// Summary provider
-			SumProvider sumProvider = new SumProvider(this.dataProvider);
-			configRegistry.registerConfigAttribute(SummaryRowConfigAttributes.SUMMARY_PROVIDER, sumProvider, DisplayMode.NORMAL, SummaryRowLayer.DEFAULT_SUMMARY_ROW_CONFIG_LABEL);
-
 		}
 	}
 

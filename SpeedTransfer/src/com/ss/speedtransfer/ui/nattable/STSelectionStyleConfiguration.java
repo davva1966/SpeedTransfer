@@ -9,10 +9,11 @@ import org.eclipse.nebula.widgets.nattable.style.Style;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.swt.graphics.Font;
 
-public class SelectionStyleConfiguration extends DefaultSelectionStyleConfiguration {
+public class STSelectionStyleConfiguration extends DefaultSelectionStyleConfiguration {
 
 	public Font selectionFont = GUIHelper.DEFAULT_FONT;
 
+	@Override
 	protected void configureSelectionStyle(IConfigRegistry configRegistry) {
 		Style cellStyle = new Style();
 		cellStyle.setAttributeValue(CellStyleAttributes.FONT, this.selectionFont);
