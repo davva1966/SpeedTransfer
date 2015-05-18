@@ -225,13 +225,16 @@ public class QueryDefinition extends XMLModel {
 	}
 
 	public int getRowsToPreview() {
-		String rows = (String) getProperties().get(ROWS_TO_PREVIEW);
-		if (rows == null || rows.trim().length() == 0)
-			return DEFAULT_ROWS_TO_PREVIEW;
 
-		try {
-			return Integer.parseInt(rows);
-		} catch (NumberFormatException e) {
+		if (getProperties() != null && getProperties().size() > 0) {
+			String rows = (String) getProperties().get(ROWS_TO_PREVIEW);
+			if (rows == null || rows.trim().length() == 0)
+				return DEFAULT_ROWS_TO_PREVIEW;
+
+			try {
+				return Integer.parseInt(rows);
+			} catch (NumberFormatException e) {
+			}
 		}
 
 		return DEFAULT_ROWS_TO_PREVIEW;
