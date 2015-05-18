@@ -61,6 +61,7 @@ public class QueryDefinition extends XMLModel {
 	public static final String EXCLUDE_IF_EMPTY = "excludeIfEmpty";
 	public static final String MANDATORY = "mandatory";
 	public static final String DEFAULT_RUN_OPTION = "defaultRunOption";
+	public static final String ROWS_TO_PREVIEW = "rowsToPreview";
 	public static final String DB_CONNECTION_FILE = "dbConnectionFile";
 	public static final String FILE_NAME = "fileName";
 	public static final String REPLACE_FILE = "replaceFile";
@@ -112,6 +113,7 @@ public class QueryDefinition extends XMLModel {
 	public static final String VALUE = "value";
 	public static final String PREFINED_VALUES = "predefined";
 	public static final String SQL_VALUES = "sql";
+	public static final int DEFAULT_ROWS_TO_PREVIEW = 1000;
 
 	// Replacement variable markers
 	public static final String REP_VAR_START_MARKER = "\\|";
@@ -185,9 +187,11 @@ public class QueryDefinition extends XMLModel {
 		if (executionNode != null) {
 			properties.put(COLUMN_HEADINGS, getAttribute(executionNode, COLUMN_HEADINGS));
 			properties.put(DEFAULT_RUN_OPTION, getAttribute(executionNode, DEFAULT_RUN_OPTION));
+			properties.put(ROWS_TO_PREVIEW, getAttribute(executionNode, ROWS_TO_PREVIEW));
 		} else {
 			properties.put(COLUMN_HEADINGS, COLUMN_HEADING_NAME);
 			properties.put(DEFAULT_RUN_OPTION, EXPORT_TO_EXCEL);
+			properties.put(ROWS_TO_PREVIEW, DEFAULT_ROWS_TO_PREVIEW);
 		}
 
 		return properties;
@@ -217,6 +221,20 @@ public class QueryDefinition extends XMLModel {
 
 	public String getDefaultRunOption() {
 		return (String) getProperties().get(DEFAULT_RUN_OPTION);
+
+	}
+
+	public int getRowsToPreview() {
+		String rows = (String) getProperties().get(ROWS_TO_PREVIEW);
+		if (rows == null || rows.trim().length() == 0)
+			return DEFAULT_ROWS_TO_PREVIEW;
+
+		try {
+			return Integer.parseInt(rows);
+		} catch (NumberFormatException e) {
+		}
+
+		return DEFAULT_ROWS_TO_PREVIEW;
 
 	}
 
@@ -643,8 +661,7 @@ public class QueryDefinition extends XMLModel {
 			return;
 
 		if (file.isLinked()) {
-			UIHelper.instance().showMessage("Connection file not found",
-					"The connection file: " + getDBConnectionFile() + " could not be found." + StringHelper.getNewLine() + StringHelper.getNewLine() + "Unable to run query.");
+			UIHelper.instance().showMessage("Connection file not found", "The connection file: " + getDBConnectionFile() + " could not be found." + StringHelper.getNewLine() + StringHelper.getNewLine() + "Unable to run query.");
 			return;
 		}
 

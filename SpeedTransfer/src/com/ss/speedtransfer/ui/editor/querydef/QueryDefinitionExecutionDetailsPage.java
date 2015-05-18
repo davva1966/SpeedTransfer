@@ -1,12 +1,16 @@
 package com.ss.speedtransfer.ui.editor.querydef;
 
+import org.eclipse.jface.dialogs.IMessageProvider;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.eclipse.ui.forms.widgets.TableWrapData;
@@ -14,11 +18,14 @@ import org.eclipse.ui.forms.widgets.TableWrapLayout;
 
 import com.ss.speedtransfer.model.QueryDefinition;
 
-
 public class QueryDefinitionExecutionDetailsPage extends AbstractQueryDefinitionDetailsPage {
 
+	protected Composite baseSection;
 	protected Combo columnHeadingCombo;
 	protected Combo defaultRunOptionCombo;
+	protected Text rowsToPreview;
+
+	protected boolean hasError = false;
 
 	public QueryDefinitionExecutionDetailsPage(QueryDefinition model) {
 		super(model);
@@ -42,17 +49,17 @@ public class QueryDefinitionExecutionDetailsPage extends AbstractQueryDefinition
 		s1.setLayoutData(td);
 		s1.clientVerticalSpacing = 10;
 
-		Composite client = toolkit.createComposite(s1);
+		baseSection = toolkit.createComposite(s1);
 		GridLayout glayout = new GridLayout();
 		glayout.marginWidth = toolkit.getBorderStyle() == SWT.BORDER ? 0 : 2;
 		glayout.numColumns = 3;
 		glayout.marginBottom = 10;
-		client.setLayout(glayout);
+		baseSection.setLayout(glayout);
 
-		createControls(parent, client);
+		createControls(parent, baseSection);
 
-		toolkit.paintBordersFor(client);
-		s1.setClient(client);
+		toolkit.paintBordersFor(baseSection);
+		s1.setClient(baseSection);
 	}
 
 	protected void createControls(Composite parent, Composite baseSection) {
@@ -100,16 +107,54 @@ public class QueryDefinitionExecutionDetailsPage extends AbstractQueryDefinition
 			}
 		});
 
+		toolkit.createLabel(baseSection, "Rows to preview");
+		rowsToPreview = toolkit.createText(baseSection, "", SWT.SINGLE);
+		rowsToPreview.setLayoutData(gd);
+		rowsToPreview.addModifyListener(new ModifyListener() {
+			public void modifyText(ModifyEvent e) {
+				String rows = rowsToPreview.getText();
+				if (rows.trim().length() == 0)
+					rows = Integer.toString(QueryDefinition.DEFAULT_ROWS_TO_PREVIEW);
+				setAttributeValue(QueryDefinition.ROWS_TO_PREVIEW, rows);
+				validate();
+			}
+		});
+
 	}
 
 	protected void internalUpdate() {
 		updateCombo(columnHeadingCombo, QueryDefinition.translateColumnHeading(getAttributeValue(QueryDefinition.COLUMN_HEADINGS)));
 		updateCombo(defaultRunOptionCombo, QueryDefinition.translateRunOption(getAttributeValue(QueryDefinition.DEFAULT_RUN_OPTION)));
+		updateText(rowsToPreview, getAttributeValue(QueryDefinition.ROWS_TO_PREVIEW));
 		validatePage();
 	}
 
 	public void setFocus() {
 		columnHeadingCombo.setFocus();
+	}
+
+	protected void validatePage() {
+
+		hasError = false;
+
+		clearMessage("Rows to preview invalid", rowsToPreview);
+
+		boolean error = false;
+
+		if (rowsToPreview.getText().trim().length() > 0) {
+			try {
+				Integer.parseInt(rowsToPreview.getText().trim());
+			} catch (NumberFormatException e) {
+				error = true;
+			}
+			if (error) {
+				issueMessage("Rows to preview invalid", IMessageProvider.ERROR, "Rows to preview must be an integer.", rowsToPreview);
+				hasError = true;
+			}
+		}
+
+		baseSection.layout();
+
 	}
 
 }

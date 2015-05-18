@@ -48,6 +48,7 @@
 					</xsd:restriction>
 				</xsd:simpleType>
 			</xsd:attribute>
+			<xsd:attribute name="rowsToPreview" use="optional" type="xsd:integer" />
 		</xsd:complexType>
 	</xsd:element>
 	<xsd:element name="replacementVariable">

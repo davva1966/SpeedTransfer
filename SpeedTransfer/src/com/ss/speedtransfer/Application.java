@@ -15,7 +15,6 @@ import org.eclipse.ui.PlatformUI;
 import com.ss.speedtransfer.util.EnvironmentHelper;
 import com.ss.speedtransfer.util.PickWorkspaceDialog;
 
-
 /**
  * This class controls all aspects of the application's execution
  */
@@ -97,7 +96,12 @@ public class Application implements IApplication {
 			System.out.println(err.toString());
 
 		} finally {
-			display.dispose();
+			if (display.isDisposed() == false) {
+				try {
+					display.dispose();
+				} catch (Exception e) {
+				}
+			}
 		}
 
 		return IApplication.EXIT_OK;
@@ -109,8 +113,8 @@ public class Application implements IApplication {
 	 * @see org.eclipse.equinox.app.IApplication#stop()
 	 */
 	public void stop() {
-//		if (!PlatformUI.isWorkbenchRunning())
-//			return;
+		// if (!PlatformUI.isWorkbenchRunning())
+		// return;
 		if (EnvironmentHelper.isExecutableEnvironment())
 			return;
 		final IWorkbench workbench = PlatformUI.getWorkbench();

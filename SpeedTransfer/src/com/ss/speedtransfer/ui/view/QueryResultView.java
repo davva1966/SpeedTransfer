@@ -23,9 +23,14 @@ import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.summaryrow.SummaryRowLayer;
 import org.eclipse.nebula.widgets.nattable.util.GCFactory;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.BusyIndicator;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.ui.IActionBars;
+import org.eclipse.ui.SubActionBars;
+import org.eclipse.ui.forms.events.IHyperlinkListener;
+import org.eclipse.ui.forms.widgets.Hyperlink;
 import org.eclipse.ui.part.ViewPart;
 
 import com.ss.speedtransfer.model.QueryDefinition;
@@ -47,11 +52,14 @@ public class QueryResultView extends ViewPart {
 	protected QueryDefinitionDataProvider dataProvider = new QueryDefinitionDataProvider();
 
 	protected Composite parent;
+	protected Composite rowCountPanel;
 	protected boolean showSummaryRow = false;
 
 	protected ConfigRegistry configRegistry;
 	protected BodyLayerStack bodyLayer;
 	protected NatTable natTable;
+
+	protected Hyperlink loadedText;
 
 	public QueryResultView() {
 	}
@@ -73,6 +81,7 @@ public class QueryResultView extends ViewPart {
 	public void createPartControl(Composite parent) {
 		this.parent = parent;
 		parent.setLayout(new GridLayout());
+		createRowCountPanel();
 		buildNatTable();
 		natTable.setVisible(false);
 
@@ -83,8 +92,10 @@ public class QueryResultView extends ViewPart {
 		if (natTable != null)
 			natTable.dispose();
 
+		dataProvider.setViewToNotify(this);
+
 		configRegistry = new ConfigRegistry();
-		
+
 		bodyLayer = new BodyLayerStack(dataProvider);
 
 		IDataProvider colHeaderDataProvider = new ExcelColumnHeadingDataProvider(dataProvider);
@@ -115,9 +126,42 @@ public class QueryResultView extends ViewPart {
 		parent.layout();
 	}
 
+	protected void createRowCountPanel() {
+
+		if (rowCountPanel != null)
+			rowCountPanel.dispose();
+
+		rowCountPanel = new Composite(parent, SWT.NONE);
+		rowCountPanel.setLayout(new GridLayout());
+		rowCountPanel.setVisible(false);
+
+		loadedText = new Hyperlink(rowCountPanel, SWT.WRAP);
+		loadedText.setText("");
+		loadedText.setUnderlined(true);
+
+		loadedText.setForeground(parent.getDisplay().getSystemColor(SWT.COLOR_DARK_BLUE));
+		loadedText.addHyperlinkListener(new IHyperlinkListener() {
+			@Override
+			public void linkEntered(org.eclipse.ui.forms.events.HyperlinkEvent e) {
+			}
+
+			@Override
+			public void linkExited(org.eclipse.ui.forms.events.HyperlinkEvent e) {
+			}
+
+			@Override
+			public void linkActivated(org.eclipse.ui.forms.events.HyperlinkEvent e) {
+				dataProvider.getAll();
+			}
+		});
+
+		GridDataFactory.fillDefaults().grab(true, false).applyTo(loadedText);
+		GridDataFactory.fillDefaults().grab(true, false).applyTo(rowCountPanel);
+	}
+
 	@Override
 	public void setFocus() {
-		// viewer.getControl().setFocus();
+
 	}
 
 	public void autoSizeColumns() {
@@ -138,23 +182,47 @@ public class QueryResultView extends ViewPart {
 					showSummaryRow = true;
 				}
 				buildNatTable();
+				parent.layout();
 				natTable.refresh();
 			}
 		});
 	}
 
+	public void dataLoadCompleted() {
+		if (dataProvider.getRowsLoaded() < dataProvider.getTotalRows()) {
+			StringBuilder sb = new StringBuilder();
+			sb.append(dataProvider.getRowsLoaded());
+			sb.append(" out of ");
+			sb.append(dataProvider.getTotalRows());
+			int remainingRows = dataProvider.getTotalRows() - dataProvider.getRowsLoaded();
+			sb.append(" rows loaded. Click here to load remaining " + remainingRows + " rows");
+
+			loadedText.setText(sb.toString());
+			loadedText.setFocus();
+			rowCountPanel.setVisible(true);
+		} else {
+			rowCountPanel.dispose();
+			parent.layout();
+		}
+		bodyLayer.getSummaryLayer().clearCache();
+		parent.layout();
+
+	}
+
 	public class BodyLayerStack extends AbstractLayerTransform {
 
+		private SummaryRowLayer summaryRowLayer;
 		private SelectionLayer selectionLayer;
 		private CompositeFreezeLayer compositeFreezeLayer;
 
 		public BodyLayerStack(QueryDefinitionDataProvider dataProvider) {
+
 			DataLayer bodyDataLayer = new DataLayer(dataProvider);
 			bodyDataLayer.setConfigLabelAccumulator(new STDataLabelAccumulator(dataProvider));
 
 			ColumnReorderLayer columnReorderLayer;
 			if (showSummaryRow) {
-				SummaryRowLayer summaryRowLayer = new SummaryRowLayer(bodyDataLayer, configRegistry, false);
+				summaryRowLayer = new SummaryRowLayer(bodyDataLayer, configRegistry, false);
 				summaryRowLayer.addConfiguration(new STSummaryRowConfiguration(dataProvider));
 				columnReorderLayer = new ColumnReorderLayer(summaryRowLayer);
 			} else {
@@ -164,17 +232,21 @@ public class QueryResultView extends ViewPart {
 
 			selectionLayer = new SelectionLayer(columnHideShowLayer, false);
 			selectionLayer.addConfiguration(new STSelectionLayerConfig());
-			
+
 			// Add handler to copy formatted data
 			CopyDataCommandHandler copyDataCommandHandler = new CopyDataCommandHandler(selectionLayer);
 			copyDataCommandHandler.setCopyFormattedText(true);
 			selectionLayer.registerCommandHandler(copyDataCommandHandler);
-					
+
 			ViewportLayer viewportLayer = new ViewportLayer(selectionLayer);
 			FreezeLayer freezeLayer = new FreezeLayer(selectionLayer);
 			compositeFreezeLayer = new CompositeFreezeLayer(freezeLayer, viewportLayer, selectionLayer);
 
 			setUnderlyingLayer(compositeFreezeLayer);
+		}
+
+		public SummaryRowLayer getSummaryLayer() {
+			return summaryRowLayer;
 		}
 
 		public SelectionLayer getSelectionLayer() {
@@ -202,6 +274,18 @@ public class QueryResultView extends ViewPart {
 			RowHeaderLayer rowHeaderLayer = new RowHeaderLayer(dataLayer, bodyLayer.getCompositeFreezeLayer(), bodyLayer.getSelectionLayer());
 			setUnderlyingLayer(rowHeaderLayer);
 		}
+	}
+
+	@Override
+	public void dispose() {
+		try {
+			final IActionBars actionBars = getViewSite().getActionBars();
+			if (actionBars instanceof SubActionBars)
+				((SubActionBars) actionBars).dispose();
+		} catch (Exception e) {
+		}
+
+		super.dispose();
 	}
 
 }

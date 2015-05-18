@@ -16,10 +16,8 @@ public class STSelectionStyleConfiguration extends DefaultSelectionStyleConfigur
 	@Override
 	protected void configureSelectionStyle(IConfigRegistry configRegistry) {
 		Style cellStyle = new Style();
-		cellStyle.setAttributeValue(CellStyleAttributes.FONT, this.selectionFont);
 		cellStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR, this.selectionBgColor);
 		cellStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR, this.selectionFgColor);
-
 		configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE, cellStyle, DisplayMode.SELECT);
 	}
 

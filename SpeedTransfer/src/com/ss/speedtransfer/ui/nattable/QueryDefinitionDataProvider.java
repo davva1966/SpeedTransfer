@@ -8,13 +8,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.progress.IProgressService;
+import org.eclipse.ui.progress.UIJob;
 
 import com.ss.speedtransfer.model.QueryDefinition;
+import com.ss.speedtransfer.ui.view.QueryResultView;
 import com.ss.speedtransfer.util.ConnectionManager;
 import com.ss.speedtransfer.util.MemoryWatcher;
 import com.ss.speedtransfer.util.SQLHelper;
@@ -30,8 +34,13 @@ public class QueryDefinitionDataProvider implements IDataProvider {
 	protected boolean sqlExecutionCompleted = false;
 	protected String sqlExecutionError = null;
 
+	protected int rowsToLoad = QueryDefinition.DEFAULT_ROWS_TO_PREVIEW;
+	protected int rowsLoaded = 0;
+	protected int totalRows = 0;
+
 	protected QueryDefinition queryDefinition;
 
+	protected QueryResultView viewToNotify;
 	protected MemoryWatcher memoryWatcher = new MemoryWatcher();
 
 	public QueryDefinition getQueryDefinition() {
@@ -49,7 +58,16 @@ public class QueryDefinitionDataProvider implements IDataProvider {
 
 	public void setQueryDefinition(QueryDefinition queryDefinition) {
 		this.queryDefinition = queryDefinition;
+		rowsToLoad = queryDefinition.getRowsToPreview();
 		load();
+	}
+
+	public QueryResultView getViewToNotify() {
+		return viewToNotify;
+	}
+
+	public void setViewToNotify(QueryResultView viewToNotify) {
+		this.viewToNotify = viewToNotify;
 	}
 
 	@Override
@@ -62,6 +80,14 @@ public class QueryDefinitionDataProvider implements IDataProvider {
 		}
 		return null;
 
+	}
+
+	public int getTotalRows() {
+		return totalRows;
+	}
+
+	public int getRowsLoaded() {
+		return rowsLoaded;
 	}
 
 	@Override
@@ -98,6 +124,11 @@ public class QueryDefinitionDataProvider implements IDataProvider {
 		return columnProperties.get(columnIndex);
 	}
 
+	public void getAll() {
+		rowsToLoad = -1;
+		load();
+	}
+
 	protected void load() {
 		try {
 			data = new ArrayList<String[]>();
@@ -118,6 +149,8 @@ public class QueryDefinitionDataProvider implements IDataProvider {
 					try {
 						final Connection connection = ConnectionManager.getConnection(getQueryDefinition());
 						final Statement stmt = connection.createStatement();
+						if (rowsToLoad > 0)
+							stmt.setMaxRows(rowsToLoad);
 
 						Thread executionThread = new Thread(new Runnable() {
 							public void run() {
@@ -133,9 +166,15 @@ public class QueryDefinitionDataProvider implements IDataProvider {
 										}
 										data.add(row);
 
-										int totalRows = SQLHelper.getSQLRowCount(getQueryDefinition().getSQL().trim(), connection);
+										totalRows = SQLHelper.getSQLRowCount(getQueryDefinition().getSQL().trim(), connection);
+
+										int rowsBeingLoaded = totalRows;
+										if (rowsToLoad > 0 && rowsToLoad < totalRows)
+											rowsBeingLoaded = rowsToLoad;
+
 										SubMonitor progress = SubMonitor.convert(monitor);
-										progress.beginTask("Retrieving " + totalRows + " rows of data...", totalRows);
+
+										progress.beginTask("Retrieving " + rowsBeingLoaded + " out of " + totalRows + " rows of data...", totalRows);
 
 										int tempCount = 0;
 										while (monitor.isCanceled() == false && resultSet.next()) {
@@ -156,6 +195,12 @@ public class QueryDefinitionDataProvider implements IDataProvider {
 												tempCount = 0;
 											}
 										}
+
+										// Set the number of rows loaded
+										// (subtract header row)
+										rowsLoaded = data.size();
+										if (rowsLoaded > 0)
+											rowsLoaded = rowsLoaded - 1;
 									}
 
 									if (monitor.isCanceled())
@@ -200,11 +245,12 @@ public class QueryDefinitionDataProvider implements IDataProvider {
 
 					} catch (Exception e) {
 						throw new InvocationTargetException(e);
-
 					}
 
 					monitor.done();
 					sqlExecutionCompleted = true;
+
+					notifyView();
 
 				}
 			});
@@ -230,6 +276,23 @@ public class QueryDefinitionDataProvider implements IDataProvider {
 			cancelled = true;
 		}
 
+	}
+
+	protected void notifyView() {
+		if (viewToNotify == null)
+			return;
+		UIJob notifyView = new UIJob("NotifyView") {
+			public IStatus runInUIThread(IProgressMonitor monitor) {
+				try {
+					viewToNotify.dataLoadCompleted();
+				} catch (Exception e) {
+				}
+
+				return Status.OK_STATUS;
+			}
+		};
+
+		notifyView.schedule();
 	}
 
 }
