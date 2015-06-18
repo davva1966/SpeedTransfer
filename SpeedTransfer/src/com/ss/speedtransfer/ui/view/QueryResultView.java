@@ -198,7 +198,7 @@ public class QueryResultView extends ViewPart {
 			sb.append(" rows loaded. Click here to load remaining " + remainingRows + " rows");
 
 			loadedText.setText(sb.toString());
-			loadedText.setFocus();
+			//loadedText.setFocus();
 			rowCountPanel.setVisible(true);
 		} else {
 			rowCountPanel.dispose();

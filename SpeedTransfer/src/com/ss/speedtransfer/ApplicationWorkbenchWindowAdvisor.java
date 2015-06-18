@@ -70,7 +70,7 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 			closeOpenQueryEditors();
 
 		PartListener.instance().maybeShowStartView(UIHelper.instance().getActivePage());
-
+		
 		// Completely hide the workbench menu
 		WorkbenchWindow workbenchWin = (WorkbenchWindow) PlatformUI.getWorkbench().getActiveWorkbenchWindow();
 		MenuManager menuManager = workbenchWin.getMenuManager();

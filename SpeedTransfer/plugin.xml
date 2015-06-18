@@ -379,6 +379,11 @@
               allPopups="true"
               locationURI="toolbar:com.ss.speedtransfer.navigatorView">
            <command
+                 commandId="com.ss.speedtransfer.newProjectCommand"
+                 style="push"
+                 tooltip="Create a new project">
+           </command>
+           <command
                  commandId="com.ss.speedtransfer.newFolderCommand"
                  style="push"
                  tooltip="Create a new folder">

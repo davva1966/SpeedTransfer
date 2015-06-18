@@ -29,7 +29,7 @@ public class RunSQLAction extends AbstractRunSQLAction {
 		if (viewRef != null) {
 			PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().hideView(viewRef);
 		}
-		QueryResultView viewPart = (QueryResultView) PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().showView(QueryResultView.ID, secondaryID, IWorkbenchPage.VIEW_ACTIVATE);
+		QueryResultView viewPart = (QueryResultView) PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().showView(QueryResultView.ID, secondaryID, IWorkbenchPage.VIEW_VISIBLE);
 		viewPart.setQueryDefinition(queryDef);
 
 	}

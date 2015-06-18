@@ -57,6 +57,7 @@ public class PartListener implements IPartListener2 {
 	@Override
 	public void partClosed(IWorkbenchPartReference partRef) {
 		// maybeShowStartView(partRef.getPage());
+		adjustWorkbench(partRef);
 
 	}
 
@@ -67,7 +68,7 @@ public class PartListener implements IPartListener2 {
 
 	@Override
 	public void partOpened(IWorkbenchPartReference partRef) {
-
+		adjustWorkbench(partRef);
 	}
 
 	@Override
@@ -131,10 +132,44 @@ public class PartListener implements IPartListener2 {
 			if (viewsOpen == false && editorsOpen == false) {
 				page.setEditorAreaVisible(false);
 				page.showView(StartView.ID, null, IWorkbenchPage.VIEW_VISIBLE);
+			} else if (viewsOpen == true && editorsOpen == false) {
+				hideStartView(page);
+				page.setEditorAreaVisible(false);
 			} else {
 				hideStartView(page);
 				page.setEditorAreaVisible(true);
 			}
+
+		} catch (Exception e) {
+		}
+
+	}
+
+	public void adjustWorkbench(IWorkbenchPartReference partRef) {
+		try {
+
+			IWorkbenchPage page = partRef.getPage();
+			
+			boolean editorsOpen = true;
+			boolean viewsOpen = false;
+			boolean startViewOpen = false;
+			if (page.getEditorReferences().length == 0)
+				editorsOpen = false;
+			IViewReference[] viewRefs = page.getViewReferences();
+			for (IViewReference viewRef : viewRefs) {
+				if (viewRef.getId().equalsIgnoreCase(StartView.ID))
+					startViewOpen = true;
+				if (viewRef.getId().equalsIgnoreCase(QueryResultView.ID) || viewRef.getId().equalsIgnoreCase(CommentsView.ID) || viewRef.getId().equalsIgnoreCase("org.eclipse.search.ui.views.SearchView")) {
+					viewsOpen = true;
+					break;
+				}
+
+			}
+
+			if (editorsOpen == false && viewsOpen)
+				page.setEditorAreaVisible(false);
+			else if (editorsOpen == false && viewsOpen == false && startViewOpen == false)
+				page.setEditorAreaVisible(true);
 
 		} catch (Exception e) {
 		}
