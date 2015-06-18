@@ -12,12 +12,14 @@ public class STSelectionBindings extends DefaultSelectionBindings {
 		super.configureMoveDownBindings(uiBindingRegistry, action);
 		uiBindingRegistry.unregisterKeyBinding(new KeyEventMatcher(SWT.SHIFT | SWT.MOD1, SWT.ARROW_DOWN));
 		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.SHIFT | SWT.MOD1, SWT.ARROW_DOWN), new STMoveToLastRowAction(true, true));
+		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.SHIFT | SWT.MOD1, SWT.END), new STMoveToLastCellAction(true, true));
 	}
 
 	protected void configureMoveUpBindings(UiBindingRegistry uiBindingRegistry, IKeyAction action) {
 		super.configureMoveUpBindings(uiBindingRegistry, action);
 		uiBindingRegistry.unregisterKeyBinding(new KeyEventMatcher(SWT.SHIFT | SWT.MOD1, SWT.ARROW_UP));
 		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.SHIFT | SWT.MOD1, SWT.ARROW_UP), new STMoveToFirstRowAction(true, true));
+		uiBindingRegistry.registerKeyBinding(new KeyEventMatcher(SWT.SHIFT | SWT.MOD1, SWT.HOME), new STMoveToFirstCellAction(true, true));
 	}
 
 }
