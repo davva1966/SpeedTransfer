@@ -58,7 +58,6 @@ public abstract class AbstractRunSQLAction extends Action {
 	}
 
 	public void run() {
-		System.out.println("Running sql...");
 		try {
 
 			if (SSUtil.validateSelectOnly(queryDef) == false) {
